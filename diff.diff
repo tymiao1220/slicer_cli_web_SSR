@@ -1,0 +1,552 @@
+diff --git a/server/rest_slicer_cli.py b/server/rest_slicer_cli.py
+index dff21da..1953e69 100644
+--- a/server/rest_slicer_cli.py
++++ b/server/rest_slicer_cli.py
+@@ -41,20 +41,21 @@ _SLICER_TYPE_TO_GIRDER_MODEL_MAP = {
+     'image': 'file',
+     'file': 'file',
+     'item': 'item',
+-#    'directory': 'folder'
++    'string': 'url',
+     'directory': 'item'
+ }
+ _SLICER_TYPE_TO_GIRDER_INPUT_SUFFIX_MAP = {
+     'image': '_girderFileId',
+     'file': '_girderFileId',
+     'item': '_girderItemId',
+-#    'directory': '_girderFolderId'
++    'string': '_url',
+     'directory': '_girderItemId'
+ }
+ 
+ _worker_docker_data_dir = constants.DOCKER_DATA_VOLUME
+ 
+ _girderOutputFolderSuffix = '_girderFolderId'
++_outputType = 'folder'
+ _girderOutputNameSuffix = '_name'
+ 
+ _return_parameter_file_name = 'returnparameterfile'
+@@ -79,6 +80,7 @@ def _getCLIParameters(clim):
+             )
+ 
+     # sort indexed parameters in increasing order of index
++
+     index_params.sort(key=lambda p: p.index)
+ 
+     # sort opt parameters in increasing order of name for easy lookup
+@@ -89,7 +91,7 @@ def _getCLIParameters(clim):
+             return p.longflag.strip('-')
+         else:
+             return None
+-
++    index_params.sort(key=lambda p: get_flag(p))
+     opt_params.sort(key=lambda p: get_flag(p))
+ 
+     return index_params, opt_params, simple_out_params
+@@ -104,12 +106,17 @@ def _createIndexedParamTaskSpec(param):
+         parameter for which the task spec should be created
+ 
+     """
++    # print 'in _createIndexedParamTaskSpec param.label is ' 
++    # print param.label  #Input Image/Output Thresholding File/Output Table File
++    # print 'in _createIndexedParamTaskSpec param.typ is ' 
++    # print param.typ   #directory/file/file
+ 
+     curTaskSpec = dict()
+     curTaskSpec['id'] = param.identifier()
+-    curTaskSpec['name'] = param.label
+-    curTaskSpec['type'] = _SLICER_TO_GIRDER_WORKER_TYPE_MAP[param.typ]
+-    curTaskSpec['format'] = _SLICER_TO_GIRDER_WORKER_TYPE_MAP[param.typ]
++    if _SLICER_TYPE_TO_GIRDER_MODEL_MAP[param.typ] != 'url':
++        curTaskSpec['name'] = param.label
++        curTaskSpec['type'] = _SLICER_TO_GIRDER_WORKER_TYPE_MAP[param.typ]
++        curTaskSpec['format'] = _SLICER_TO_GIRDER_WORKER_TYPE_MAP[param.typ]
+ 
+     if param.isExternalType():
+         curTaskSpec['target'] = 'filepath'  # check
+@@ -120,7 +127,7 @@ def _createIndexedParamTaskSpec(param):
+ def _addIndexedInputParamsToHandler(index_input_params, handlerDesc):
+ 
+     for param in index_input_params:
+-
++        #print param.isExternalType()
+         # add to route description
+         if param.isExternalType():
+             suffix = _SLICER_TYPE_TO_GIRDER_INPUT_SUFFIX_MAP[param.typ]
+@@ -128,6 +135,9 @@ def _addIndexedInputParamsToHandler(index_input_params, handlerDesc):
+                               'Girder ID of input %s - %s: %s'
+                               % (param.typ, param.identifier(), param.description),
+                               dataType='string', required=True)
++            #print param.identifier() + suffix
++            #print 'Girder ID of input %s - %s: %s' % (param.typ, param.identifier(), param.description)
++
+         else:
+             handlerDesc.param(param.identifier(), param.description,
+                               dataType='string', required=True)
+@@ -136,7 +146,8 @@ def _addIndexedInputParamsToHandler(index_input_params, handlerDesc):
+ def _addIndexedInputParamsToTaskSpec(index_input_params, taskSpec):
+ 
+     for param in index_input_params:
+-
++        # print 'in _addIndexedInputParamsToTaskSpec to _createIndexedParamTaskSpec param is '
++        # print param # directory parameter 'inputMultipleImage'
+         # add to task spec
+         curTaskSpec = _createIndexedParamTaskSpec(param)
+         taskSpec['inputs'].append(curTaskSpec)
+@@ -145,13 +156,20 @@ def _addIndexedInputParamsToTaskSpec(index_input_params, taskSpec):
+ def _addIndexedOutputParamsToHandler(index_output_params, handlerDesc):
+ 
+     for param in index_output_params:
+-
++        if param.flag=='-item':
++            _girderOutputItemSuffix = '_girderItemId'
+         # add param for parent folder to route description
+-        handlerDesc.param(param.identifier() + _girderOutputFolderSuffix,
+-                          'Girder ID of parent folder '
+-                          'for output %s - %s: %s'
+-                          % (param.typ, param.typ, param.description),
+-                          dataType='string', required=True)
++            handlerDesc.param(param.identifier() + _girderOutputItemSuffix,
++                              'Girder ID of parent item '
++                              'for output %s - %s: %s'
++                              % (param.typ, param.typ, param.description),
++                              dataType='string', required=True)
++        else:   
++            handlerDesc.param(param.identifier() + _girderOutputFolderSuffix,
++                              'Girder ID of parent folder '
++                              'for output %s - %s: %s'
++                              % (param.typ, param.typ, param.description),
++                              dataType='string', required=True)
+ 
+         # add param for name of current output to route description
+         handlerDesc.param(param.identifier() + _girderOutputNameSuffix,
+@@ -163,7 +181,7 @@ def _addIndexedOutputParamsToHandler(index_output_params, handlerDesc):
+ def _addIndexedOutputParamsToTaskSpec(index_output_params, taskSpec, hargs):
+ 
+     for param in index_output_params:
+-
++        print param
+         # add to task spec
+         curTaskSpec = _createIndexedParamTaskSpec(param)
+ 
+@@ -250,7 +268,6 @@ def _addOptionalInputParamsToTaskSpec(opt_input_params, taskSpec):
+ def _addOptionalOutputParamsToHandler(opt_output_params, handlerDesc):
+ 
+     for param in opt_output_params:
+-
+         if not param.isExternalType():
+             continue
+ 
+@@ -334,14 +351,21 @@ def _addReturnParameterFileParamToTaskSpec(taskSpec, hargs):
+ 
+ 
+ def _createInputParamBindingSpec(param, hargs, token):
+-
++    # print 'in _createInputParamBindingSpec param is '
++    # print param #directory parameter 'inputMultipleImage'/integer parameter 'upperBound'/integer parameter 'lowerBound'
+     curBindingSpec = dict()
+     if _is_on_girder(param):
+-        curBindingSpec = wutils.girderInputSpec(
+-            hargs[param.identifier()],
+-            resourceType=_SLICER_TYPE_TO_GIRDER_MODEL_MAP[param.typ],
+-            dataType='string', dataFormat='string',
+-            token=token, fetchParent=True)
++        if _SLICER_TYPE_TO_GIRDER_MODEL_MAP[param.typ] == 'url':
++
++            url = hargs['params']['url'].replace('"', '')
++            curBindingSpec = wutils.httpInputSpec(url)
++        else:
++
++            curBindingSpec = wutils.girderInputSpec(
++                hargs[param.identifier()],
++                resourceType=_SLICER_TYPE_TO_GIRDER_MODEL_MAP[param.typ],
++                dataType='string', dataFormat='string',
++                token=token, fetchParent=True)
+     else:
+         # inputs that are not of type image, file, or directory
+         # should be passed inline as string from json.dumps()
+@@ -355,12 +379,21 @@ def _createInputParamBindingSpec(param, hargs, token):
+ 
+ def _createOutputParamBindingSpec(param, hargs, user, token):
+ 
+-    curBindingSpec = wutils.girderOutputSpec(
+-        hargs[param.identifier()],
+-        token,
+-        name=hargs['params'][param.identifier() + _girderOutputNameSuffix],
+-        dataType='string', dataFormat='string'
+-    )
++    if param.flag =='-item':
++        curBindingSpec = wutils.girderOutputSpec(
++            hargs[param.identifier()],
++            token,
++            parentType='item',
++            name=hargs['params'][param.identifier() + _girderOutputNameSuffix],
++            dataType='string', dataFormat='string'
++        )
++    else:
++        curBindingSpec = wutils.girderOutputSpec(
++            hargs[param.identifier()],
++            token,
++            name=hargs['params'][param.identifier() + _girderOutputNameSuffix],
++            dataType='string', dataFormat='string'
++        )
+ 
+     if param.isExternalType() and param.reference is not None:
+ 
+@@ -404,10 +437,17 @@ def _addOptionalInputParamBindings(opt_input_params, bspec, hargs, user, token):
+                 continue
+ 
+             curModelName = _SLICER_TYPE_TO_GIRDER_MODEL_MAP[param.typ]
+-            curModel = ModelImporter.model(curModelName)
+-            curId = hargs['params'][param.identifier() + suffix]
++            if curModelName == 'url':
++                print 'curModelName == url'
++                print hargs['params']
++                hargs[param.identifier()] = hargs['params']['URL(Region)']
++            else:
++                print 'curModelName != url'
++                print curModelName
++                curModel = ModelImporter.model(curModelName)
++                curId = hargs['params'][param.identifier() + suffix]
+ 
+-            hargs[param.identifier()] = curModel.load(id=curId,
++                hargs[param.identifier()] = curModel.load(id=curId,
+                                                       level=AccessType.READ,
+                                                       user=user)
+ 
+@@ -463,7 +503,6 @@ def _addReturnParameterFileBinding(bspec, hargs, user, token):
+ 
+     bspec[curName] = curBindingSpec
+ 
+-
+ def _is_on_girder(param):
+     return param.typ in _SLICER_TYPE_TO_GIRDER_MODEL_MAP
+ 
+@@ -481,7 +520,6 @@ def _addOptionalInputParamsToContainerArgs(opt_input_params,
+                                            containerArgs, hargs):
+ 
+     for param in opt_input_params:
+-
+         if param.longflag:
+             curFlag = param.longflag
+         elif param.flag:
+@@ -581,7 +619,9 @@ def _addIndexedParamsToContainerArgs(index_params, containerArgs, hargs):
+                 _worker_docker_data_dir,
+                 hargs['params'][param.identifier() + _girderOutputNameSuffix]
+             )
+-
++            print '_addIndexedParamsToContainerArgs'
++            print param.flag
++            print curValue
+         containerArgs.append(curValue)
+ 
+ 
+@@ -612,7 +652,6 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource):
+ 
+     # get xml spec
+     str_xml = cliXML
+-
+     # parse cli xml spec
+     with tempfile.NamedTemporaryFile(suffix='.xml') as f:
+         f.write(str_xml)
+@@ -641,12 +680,15 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource):
+     # do stuff needed to create REST endpoint for cLI
+     handlerDesc = Description(clim.title).notes(str_description)
+ 
++    #print handlerDesc
+     # get CLI parameters
+-    index_params, opt_params, simple_out_params = _getCLIParameters(clim)
+-
++    index_params, opt_params, simple_out_params= _getCLIParameters(clim)
++    
++    # print index_params [<CLIParameter 'inputMultipleImage' of type directory>, <CLIParameter 'outputThresholding' of type file>, <CLIParameter 'tableFile' of type file>]
+     # add indexed input parameters
+     index_input_params = filter(lambda p: p.channel != 'output', index_params)
+-
++    #print index_input_params
++    # print index_input_params [<CLIParameter 'inputMultipleImage' of type directory>]
+     _addIndexedInputParamsToHandler(index_input_params, handlerDesc)
+ 
+     # add indexed output parameters
+@@ -663,7 +705,7 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource):
+     opt_output_params = filter(lambda p: p.channel == 'output', opt_params)
+ 
+     _addOptionalOutputParamsToHandler(opt_output_params, handlerDesc)
+-
++    #print simple_out_params
+     # add returnparameterfile if there are simple output params
+     if len(simple_out_params) > 0:
+         _addReturnParameterFileParamToHandler(handlerDesc)
+@@ -673,7 +715,8 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource):
+     @access.user
+     @describeRoute(handlerDesc)
+     def cliHandler(self, **hargs):
+-
++        print 'in cliHandler hargs is '
++        print hargs
+         user = self.getCurrentUser()
+         token = self.getCurrentToken()['_id']
+ 
+@@ -752,6 +795,8 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource):
+ 
+         # schedule job
+         job['kwargs'] = kwargs
++        print '-------job is-------'
++        print job
+         job = jobModel.save(job)
+         jobModel.scheduleJob(job)
+ 
+@@ -759,28 +804,35 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource):
+         return jobModel.filter(job, user)
+ 
+     handlerFunc = cliHandler
+-
++    #print _is_on_girder
+     # loadmodel stuff for indexed input params on girder
+     index_input_params_on_girder = filter(_is_on_girder, index_input_params)
+-
++    #print '---------'
++    #print index_input_params_on_girder
+     for param in index_input_params_on_girder:
+ 
+         curModel = _SLICER_TYPE_TO_GIRDER_MODEL_MAP[param.typ]
+-        suffix = _SLICER_TYPE_TO_GIRDER_INPUT_SUFFIX_MAP[param.typ]
+-        curMap = {param.identifier() + suffix: param.identifier()}
+-
+-        handlerFunc = loadmodel(map=curMap,
+-                                model=curModel,
+-                                level=AccessType.READ)(handlerFunc)
++        #print curModel
++        if curModel != 'url':
+ 
++            suffix = _SLICER_TYPE_TO_GIRDER_INPUT_SUFFIX_MAP[param.typ]
++            curMap = {param.identifier() + suffix: param.identifier()}
++        #    print curMap
++            handlerFunc = loadmodel(map=curMap,
++                                    model=curModel,
++                                    level=AccessType.READ)(handlerFunc)
++            
+     # loadmodel stuff for indexed output params on girder
+     index_output_params_on_girder = filter(_is_on_girder, index_output_params)
+ 
+     for param in index_output_params_on_girder:
+-
+-        curModel = 'folder'
+-        curMap = {param.identifier() + _girderOutputFolderSuffix: param.identifier()}
+-
++        if param.flag=='-item':
++            _girderOutputItemSuffix = '_girderItemId'
++            curModel = 'item'
++            curMap = {param.identifier() + _girderOutputItemSuffix: param.identifier()}
++        else:
++            curModel = 'folder'
++            curMap = {param.identifier() + _girderOutputFolderSuffix: param.identifier()}
+         handlerFunc = loadmodel(map=curMap,
+                                 model=curModel,
+                                 level=AccessType.WRITE)(handlerFunc)
+@@ -981,74 +1033,144 @@ def genRESTEndPointsForSlicerCLIsInDockerCache(restResource, dockerCache):
+     """
+ 
+     dockerImages = dockerCache.getImageNames()
++    #print '------resourceName is-------'
++    #print restResource.resourceName
+     # validate restResource argument
+     if not isinstance(restResource, Resource):
+         raise Exception('restResource must be a '
+                         'Docker Resource')
+ 
+     for dimg in dockerImages:
++        #print '------tag is-------'
++        #print dimg[dimg.find(':')+1:]
++        if restResource.resourceName!='slicer_cli_web_SSR':
++            if restResource.resourceName==dimg[dimg.find(':')+1:]:
++                #print 'register Images',dimg[:dimg.find(':')],'in',restResource.resourceName
++                docker_image = dockerCache.getImageByName(dimg)
++                # get CLI list
++                cliListSpec = docker_image.getCLIListSpec()
++
++                # Add REST end-point for each CLI
++                for cliRelPath in cliListSpec.keys():
++                    restPath = dimg.replace(
++                        ':', '_').replace('/', '_').replace('@', '_')
++                    # create a POST REST route that runs the CLI
++                    try:
++                        cliXML = docker_image.getCLIXML(cliRelPath)
++
++                        cliRunHandler = genHandlerToRunDockerCLI(dimg,
++                                                                 cliRelPath,
++                                                                 cliXML,
++                                                                 restResource)
++
++                    except Exception:
++                        logger.exception('Failed to create REST endpoints for %r',
++                                         cliRelPath)
++                        continue
++
++                    cliSuffix = os.path.normpath(cliRelPath).replace(os.sep, '_')
++
++                    cliRunHandlerName = restPath+'_run_' + cliSuffix
++                    setattr(restResource, cliRunHandlerName, cliRunHandler)
++                    restResource.route('POST',
++                                       (restPath, cliRelPath, 'run'),
++                                       getattr(restResource, cliRunHandlerName))
++
++                    # store new rest endpoint
++                    restResource.storeEndpoints(
++                        dimg, cliRelPath, 'run', ['POST', (restPath, cliRelPath, 'run'),
++                                                  cliRunHandlerName])
++
++                    # create GET REST route that returns the xml of the CLI
++                    try:
++                        cliGetXMLSpecHandler = genHandlerToGetDockerCLIXmlSpec(
++                            cliRelPath, cliXML,
++                            restResource)
++                    except Exception:
++                        logger.exception('Failed to create REST endpoints for %s',
++                                         cliRelPath)
++                        exc_type, exc_obj, exc_tb = sys.exc_info()
++                        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
++                        logger.error('%r', [exc_type, fname, exc_tb.tb_lineno])
++                        continue
++
++                    cliGetXMLSpecHandlerName = restPath+'_get_xml_' + cliSuffix
++                    setattr(restResource,
++                            cliGetXMLSpecHandlerName,
++                            cliGetXMLSpecHandler)
++                    restResource.route('GET',
++                                       (restPath, cliRelPath, 'xmlspec',),
++                                       getattr(restResource, cliGetXMLSpecHandlerName))
++
++                    restResource.storeEndpoints(
++                        dimg, cliRelPath, 'xmlspec',
++                        ['GET', (restPath, cliRelPath, 'xmlspec'),
++                         cliGetXMLSpecHandlerName])
++                    logger.debug('Created REST endpoints for %s', cliRelPath)
+ 
+-        docker_image = dockerCache.getImageByName(dimg)
+-        # get CLI list
+-        cliListSpec = docker_image.getCLIListSpec()
+-
+-        # Add REST end-point for each CLI
+-        for cliRelPath in cliListSpec.keys():
+-            restPath = dimg.replace(
+-                ':', '_').replace('/', '_').replace('@', '_')
+-            # create a POST REST route that runs the CLI
+-            try:
+-                cliXML = docker_image.getCLIXML(cliRelPath)
+-
+-                cliRunHandler = genHandlerToRunDockerCLI(dimg,
+-                                                         cliRelPath,
+-                                                         cliXML,
+-                                                         restResource)
+-
+-            except Exception:
+-                logger.exception('Failed to create REST endpoints for %r',
+-                                 cliRelPath)
+-                continue
+-
+-            cliSuffix = os.path.normpath(cliRelPath).replace(os.sep, '_')
+-
+-            cliRunHandlerName = restPath+'_run_' + cliSuffix
+-            setattr(restResource, cliRunHandlerName, cliRunHandler)
+-            restResource.route('POST',
+-                               (restPath, cliRelPath, 'run'),
+-                               getattr(restResource, cliRunHandlerName))
+-
+-            # store new rest endpoint
+-            restResource.storeEndpoints(
+-                dimg, cliRelPath, 'run', ['POST', (restPath, cliRelPath, 'run'),
+-                                          cliRunHandlerName])
+-
+-            # create GET REST route that returns the xml of the CLI
+-            try:
+-                cliGetXMLSpecHandler = genHandlerToGetDockerCLIXmlSpec(
+-                    cliRelPath, cliXML,
+-                    restResource)
+-            except Exception:
+-                logger.exception('Failed to create REST endpoints for %s',
+-                                 cliRelPath)
+-                exc_type, exc_obj, exc_tb = sys.exc_info()
+-                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+-                logger.error('%r', [exc_type, fname, exc_tb.tb_lineno])
+-                continue
+-
+-            cliGetXMLSpecHandlerName = restPath+'_get_xml_' + cliSuffix
+-            setattr(restResource,
+-                    cliGetXMLSpecHandlerName,
+-                    cliGetXMLSpecHandler)
+-            restResource.route('GET',
+-                               (restPath, cliRelPath, 'xmlspec',),
+-                               getattr(restResource, cliGetXMLSpecHandlerName))
+-
+-            restResource.storeEndpoints(
+-                dimg, cliRelPath, 'xmlspec',
+-                ['GET', (restPath, cliRelPath, 'xmlspec'),
+-                 cliGetXMLSpecHandlerName])
+-            logger.debug('Created REST endpoints for %s', cliRelPath)
++        else:
++            #print 'register all in',restResource.resourceName
++            docker_image = dockerCache.getImageByName(dimg)
++            # get CLI list
++            cliListSpec = docker_image.getCLIListSpec()
++
++            # Add REST end-point for each CLI
++            for cliRelPath in cliListSpec.keys():
++                restPath = dimg.replace(
++                    ':', '_').replace('/', '_').replace('@', '_')
++                # create a POST REST route that runs the CLI
++                try:
++                    cliXML = docker_image.getCLIXML(cliRelPath)
++
++                    cliRunHandler = genHandlerToRunDockerCLI(dimg,
++                                                             cliRelPath,
++                                                             cliXML,
++                                                             restResource)
++
++                except Exception:
++                    logger.exception('Failed to create REST endpoints for %r',
++                                     cliRelPath)
++                    continue
++
++                cliSuffix = os.path.normpath(cliRelPath).replace(os.sep, '_')
++
++                cliRunHandlerName = restPath+'_run_' + cliSuffix
++                setattr(restResource, cliRunHandlerName, cliRunHandler)
++                restResource.route('POST',
++                                   (restPath, cliRelPath, 'run'),
++                                   getattr(restResource, cliRunHandlerName))
++
++                # store new rest endpoint
++                restResource.storeEndpoints(
++                    dimg, cliRelPath, 'run', ['POST', (restPath, cliRelPath, 'run'),
++                                              cliRunHandlerName])
++
++                # create GET REST route that returns the xml of the CLI
++                try:
++                    cliGetXMLSpecHandler = genHandlerToGetDockerCLIXmlSpec(
++                        cliRelPath, cliXML,
++                        restResource)
++                except Exception:
++                    logger.exception('Failed to create REST endpoints for %s',
++                                     cliRelPath)
++                    exc_type, exc_obj, exc_tb = sys.exc_info()
++                    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
++                    logger.error('%r', [exc_type, fname, exc_tb.tb_lineno])
++                    continue
++
++                cliGetXMLSpecHandlerName = restPath+'_get_xml_' + cliSuffix
++                setattr(restResource,
++                        cliGetXMLSpecHandlerName,
++                        cliGetXMLSpecHandler)
++                restResource.route('GET',
++                                   (restPath, cliRelPath, 'xmlspec',),
++                                   getattr(restResource, cliGetXMLSpecHandlerName))
++
++                restResource.storeEndpoints(
++                    dimg, cliRelPath, 'xmlspec',
++                    ['GET', (restPath, cliRelPath, 'xmlspec'),
++                     cliGetXMLSpecHandlerName])
++                logger.debug('Created REST endpoints for %s', cliRelPath)
+ 
+     return restResource
+ 

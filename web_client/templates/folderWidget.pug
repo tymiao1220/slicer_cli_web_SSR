@@ -1,0 +1,19 @@
+extends ./widget.pug
+
+block input
+  .input-group
+
+    if value && value.name
+      - value = value.name();
+    +input(title, type, id, value)(placeholder='Choose a folder...', readonly=true)
+    span.input-group-btn
+      button.btn.btn-default.s-select-folder-button(type='button')
+        i.icon-folder-open
+      if channel !=='output'
+        if optionFolders
+          button.btn.btn-default.dropdownOption(data-toggle="dropdown" style='padding-left: 0px; padding-right: 0px; border-radius: 3px; background rgba(0,0,0,0.2)')
+            i.icon-down-dir
+          .dropdown-menu
+            each optionFolder in optionFolders
+              li.optionFolder(cid=optionFolder.cid)
+                a.dropdown-item #{optionFolder.get('name')}
