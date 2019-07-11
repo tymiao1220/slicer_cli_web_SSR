@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import _ from 'underscore';
+import Backbone from 'backbone';
 
 import * as allModels from 'girder/models';
 import AccessWidget from 'girder/views/widgets/AccessWidget';
@@ -10,7 +11,6 @@ import EditFolderWidget from 'girder/views/widgets/EditFolderWidget';
 import EditItemWidget from 'girder/views/widgets/EditItemWidget';
 import FolderInfoWidget from 'girder/views/widgets/FolderInfoWidget';
 
-import FolderListWidget from './FolderListWidget';
 import ItemListWidget from 'girder/views/widgets/ItemListWidget';
 import ItemModel from 'girder/models/ItemModel';
 import MetadataWidget from 'girder/views/widgets/MetadataWidget';
@@ -18,13 +18,15 @@ import router from 'girder/router';
 // import UploadWidget from './SsrUploadWidget';
 import View from 'girder/views/View';
 import { AccessType } from 'girder/constants';
-import { confirm, handleClose } from 'girder/dialog';
+import { confirm } from 'girder/dialog';
 import events from 'girder/events';
 import { getModelClassByName, renderMarkdown, formatCount, capitalize, formatSize, splitRoute, parseQueryString } from 'girder/misc';
 import { restRequest, getApiRoot } from 'girder/rest';
 
 import HierarchyBreadcrumbTemplate from 'girder/templates/widgets/hierarchyBreadcrumb.pug';
 import HierarchyWidgetTemplate from 'girder/templates/widgets/hierarchyWidget.pug';
+
+import FolderListWidget from './FolderListWidget';
 
 import 'girder/stylesheets/widgets/hierarchyWidget.styl';
 
@@ -162,7 +164,6 @@ var HierarchyWidget = View.extend({
             parentView: this
         });
 
-
         this.folderListView = new FolderListWidget({
             folderFilter: this._itemFilter,
             parentType: this.parentModel.resourceName,
@@ -176,7 +177,7 @@ var HierarchyWidget = View.extend({
             if (this.uploadWidget) {
                 this.uploadWidget.folder = folder;
             }
-        }, this).off('g:checkboxesChanged').on('g:folderChecked', function (folder){
+        }, this).off('g:checkboxesChanged').on('g:folderChecked', function (folder) {
             this.trigger('selectedFolderFromCheckbox', folder);
         }, this).on('g:checkboxesChanged', this.updateChecked, this)
             .off('g:changed').on('g:changed', function () {
@@ -246,23 +247,21 @@ var HierarchyWidget = View.extend({
             routeParts = splitRoute(curRoute),
             queryString = parseQueryString(routeParts.name);
         let unparsedQueryString = $.param(queryString);
-            if (unparsedQueryString.length > 0) {
-                unparsedQueryString = '?' + unparsedQueryString;
-            }
-            console.log(unparsedQueryString);
+        if (unparsedQueryString.length > 0) {
+            unparsedQueryString = '?' + unparsedQueryString;
+        }
+        console.log(unparsedQueryString);
         if (this._routing) {
-            if(this.baseRoute){
-                var route = this.baseRoute + '/' +
-                this.breadcrumbs[0].get('_id');
+            let route;
+            if (this.baseRoute) {
+                route = this.baseRoute + '/' + this.breadcrumbs[0].get('_id');
+            } else {
+                route = this.breadcrumbs[0].resourceName + '/' + this.breadcrumbs[0].get('_id');
             }
-            else{
-                var route = this.breadcrumbs[0].resourceName + '/' +
-                this.breadcrumbs[0].get('_id');
-            }
-            
+
             if (this.parentModel.resourceName === 'folder') {
                 route += '/folder/' + this.parentModel.get('_id') + unparsedQueryString;
-            }else{
+            } else {
                 route += unparsedQueryString;
             }
             router.navigate(route);
@@ -713,7 +712,6 @@ var HierarchyWidget = View.extend({
             pickedMoveAllowed: this.getPickedMoveAllowed(),
             pickedDesc: this.getPickedDescription()
         });
-
     },
 
     getPickedCount: function () {

@@ -583,6 +583,8 @@ describe('XML Schema parser', function () {
             '</executable>'
         ].join('');
 
+        console.log(JSON.stringify(parser.parse(spec)));
+
         expect(
             parser.parse(spec)
         ).toEqual(

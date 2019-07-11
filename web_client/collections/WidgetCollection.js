@@ -26,7 +26,7 @@ var WidgetCollection = Backbone.Collection.extend({
                     break;
                 case 'new-file':
                     // window.girderFolder = m.value();
-                    params[m.id + '_girderFolderId'] = m.value().get('folderId') //get('folderId');
+                    params[m.id + '_girderFolderId'] = m.value().get('folderId'); // get('folderId');
                     params[m.id + '_name'] = m.value().get('name');
                     break;
                 case 'new-item':

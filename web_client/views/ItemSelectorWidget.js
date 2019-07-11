@@ -2,7 +2,7 @@ import _ from 'underscore';
 
 import { getCurrentUser } from 'girder/auth';
 import HierarchyWidget from 'girder/views/widgets/HierarchyWidget';
-import FileListWidget from 'girder/views/widgets/FileListWidget';
+// import FileListWidget from 'girder/views/widgets/FileListWidget';
 import View from 'girder/views/View';
 import ItemModel from 'girder/models/ItemModel';
 import FileModel from 'girder/models/FileModel';
@@ -24,7 +24,7 @@ var ItemSelectorWidget = View.extend({
     },
 
     render: function () {
-        if(this.model.get('channel') === 'output'){
+        if (this.model.get('channel') === 'output') {
             this._hierarchyView = new HierarchyWidget({
                 parentView: this,
                 parentModel: this.taskFolder || this.rootPath,
@@ -36,7 +36,7 @@ var ItemSelectorWidget = View.extend({
                 viewLinks: false,
                 onItemClick: _.bind(this._selectItem, this)
             });
-        }else{
+        } else {
             this._hierarchyView = new HierarchyWidget({
                 parentView: this,
                 parentModel: this.rootPath,
@@ -50,7 +50,7 @@ var ItemSelectorWidget = View.extend({
             });
         }
         this.$el.html(
-            itemSelectorWidget(this.model.attributes)  // eslint-disable-line backbone/no-view-model-attributes
+            itemSelectorWidget(this.model.attributes) // eslint-disable-line backbone/no-view-model-attributes
         ).girderModal(this);
 
         this._hierarchyView.setElement(this.$('.s-hierarchy-widget')).render();
@@ -75,12 +75,12 @@ var ItemSelectorWidget = View.extend({
         var image, file;
         switch (this.model.get('type')) {
             case 'item':
-                
+
                 this.model.set({
                     path: this._path(),
                     value: item
                 });
-               
+
                 this.trigger('g:saved');
                 this.$el.modal('hide');
                 break;
@@ -131,7 +131,7 @@ var ItemSelectorWidget = View.extend({
                     path: this._path(),
                     value: item
                 });
-               
+
                 this.trigger('g:saved');
                 this.$el.modal('hide');
                 break;
@@ -141,7 +141,7 @@ var ItemSelectorWidget = View.extend({
                     path: this._path(),
                     value: item
                 });
-               
+
                 this.trigger('g:saved');
                 this.$el.modal('hide');
                 break;
@@ -170,7 +170,7 @@ var ItemSelectorWidget = View.extend({
                         .text('You must provide a name for the new file.');
                     return;
                 }
-                                console.log('new-file-item')
+                console.log('new-file-item');
                 // the parent must be a folder
                 if (parent.resourceName !== 'folder') {
                     errorEl.removeClass('hidden')
@@ -187,7 +187,7 @@ var ItemSelectorWidget = View.extend({
                     })
                 });
                 console.log('new-file');
-                console.log(this.model)
+                console.log(this.model);
                 break;
 
             case 'new-file-item':

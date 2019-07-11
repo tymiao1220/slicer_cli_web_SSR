@@ -2,6 +2,8 @@ import _ from 'underscore';
 
 import View from 'girder/views/View';
 
+import FolderCollection from 'girder/collections/FolderCollection';
+
 import ItemSelectorWidget from './ItemSelectorWidget';
 import FolderSelectorWidget from './FolderSelectorWidget';
 
@@ -22,7 +24,6 @@ import 'bootstrap-slider/dist/bootstrap-slider';
 import 'bootstrap-slider/dist/css/bootstrap-slider.css';
 
 import events from '../events';
-import FolderCollection from 'girder/collections/FolderCollection';
 
 var ControlWidget = View.extend({
     events: {
@@ -41,7 +42,7 @@ var ControlWidget = View.extend({
         this.listenTo(events, 's:widgetSet:' + this.model.id, (value) => {
             this.model.set('value', value);
         });
-        
+
         this.optionFolders = settings.optionFolders;
         this.taskFolder = settings.taskFolder;
     },
@@ -54,9 +55,9 @@ var ControlWidget = View.extend({
         }
         // console.log('---------------50--------------');
         // console.log(this.optionFolders);
-        let templateAttributes = Object.assign(this.model.attributes, {'optionFolders':this.optionFolders});
+        let templateAttributes = Object.assign(this.model.attributes, {'optionFolders': this.optionFolders});
         // console.log(templateAttributes);
-        this.$el.html(this.template()(templateAttributes));  // eslint-disable-line backbone/no-view-model-attributes
+        this.$el.html(this.template()(templateAttributes)); // eslint-disable-line backbone/no-view-model-attributes
         this.$('.s-control-item[data-type="range"] input').slider();
         this.$('.s-control-item[data-type="color"] .input-group').colorpicker({});
         this.$('[data-toggle="tooltip"]').tooltip({container: 'body'});
@@ -218,9 +219,9 @@ var ControlWidget = View.extend({
     _selectRegion: function () {
         events.trigger('s:widgetDrawRegion', this.model);
     },
-    _seletFromOption: function(e){
+    _seletFromOption: function (e) {
         this.folderCollection = new FolderCollection();
-        this.folderCollection.set(this.optionFolders)
+        this.folderCollection.set(this.optionFolders);
         let cid = e.currentTarget.getAttribute('cid');
 
         this.model.set({

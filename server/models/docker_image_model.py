@@ -100,7 +100,7 @@ class DockerImageModel(AccessControlledModel):
             public=True,
             async=True
         )
-        
+
         jobModel.scheduleJob(job)
         return job
 

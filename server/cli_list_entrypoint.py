@@ -114,5 +114,6 @@ def CLIListEntrypoint(cli_list_spec_file=None):
 
     return output_code
 
+
 if __name__ == "__main__":
     CLIListEntrypoint()

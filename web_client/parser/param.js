@@ -14,7 +14,7 @@ function param(paramTag) {
     var $param = $(paramTag);
     var type = widget(paramTag);
     var values = {};
-    
+
     var channel = $param.find('channel');
     var flag = $param.find('flag');
     var ext;
@@ -24,30 +24,28 @@ function param(paramTag) {
         channel = 'input';
     }
 
-    if (flag.length) {
+    if (flag.text() === 'item') {
         flag = flag.text();
-    }else{
-        flag = ''
+    } else {
+        flag = undefined;
     }
     if (type === 'directory' && channel === 'input') {
-        if(flag==='item')
-        {
+        if (flag === 'item') {
             type = 'item';
-        }else{
+        } else {
             type = 'directory';
-        }  
-    } 
-    if ((type === 'file' || type === 'image' ) && channel === 'output') {
-        type = 'new-file'; 
-        ext=$param.attr('fileExtensions')
+        }
     }
-    if(type === 'directory' && channel === 'output'){
-        if(flag==='item')
-        {
+    if ((type === 'file' || type === 'image') && channel === 'output') {
+        type = 'new-file';
+        ext = $param.attr('fileExtensions');
+    }
+    if (type === 'directory' && channel === 'output') {
+        if (flag === 'item') {
             type = 'new-item';
-        }else{
+        } else {
             type = 'new-directory';
-        }  
+        }
     }
     if (!type) {
         console.warn('Unhandled parameter type "' + paramTag.tagName + '"'); // eslint-disable-line no-console
@@ -69,8 +67,8 @@ function param(paramTag) {
             title: $param.find('label').text(),
             description: $param.find('description').text(),
             channel: channel,
-            flag:flag,
-            ext:ext
+            flag: flag,
+            ext: ext
         },
         values,
         defaultValue(type, $param.find('default')),

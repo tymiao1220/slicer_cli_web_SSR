@@ -66,7 +66,7 @@ class DockerResource(Resource):
         data = {}
         for val in cache:
             name, tag, imgData = self.createRestDataForImageVersion(val)
-            if name!='skip':
+            if name != 'skip':
                 data.setdefault(name, {})[tag] = imgData
 
         return data
@@ -83,12 +83,12 @@ class DockerResource(Resource):
         """
 
         name = dockerImage.name
-        
-        #print name
+
+        # print name
         if name in self.currentEndpoints:
             print name
             endpointData = self.currentEndpoints[name]
-            
+
             if ':' in name:
                 imageAndTag = name.split(':')
             else:
@@ -115,7 +115,8 @@ class DockerResource(Resource):
                                                '/' + '/'.join(cli_list)
             return userAndRepo, tag, data
         else:
-            return 'skip','skip','skip'
+            return 'skip', 'skip', 'skip'
+
     @access.admin
     @describeRoute(
         Description('Remove a docker image')
@@ -290,4 +291,3 @@ class DockerResource(Resource):
 
             self.deleteImageEndpoints()
             genRESTEndPointsForSlicerCLIsInDockerCache(self, cache)
-

@@ -1,17 +1,16 @@
 import _ from 'underscore';
 
 import { getCurrentUser } from 'girder/auth';
-import HierarchyWidget from './widgets/HierarchyWidget';
-import FileListWidget from 'girder/views/widgets/FileListWidget';
+// import FileListWidget from 'girder/views/widgets/FileListWidget';
 import View from 'girder/views/View';
 import ItemModel from 'girder/models/ItemModel';
-import FileModel from 'girder/models/FileModel';
-import FolderModel from 'girder/models/FolderModel';
+// import FileModel from 'girder/models/FileModel';
+// import FolderModel from 'girder/models/FolderModel';
 
-import { restRequest } from 'girder/rest';
-
+// import { restRequest } from 'girder/rest';
+import HierarchyWidget from './widgets/HierarchyWidget';
 import folderSelectorWidget from '../templates/folderSelectorWidget.pug';
-import events from '../events';
+// import events from '../events';
 
 var FolderSelectorWidget = View.extend({
     events: {
@@ -22,10 +21,9 @@ var FolderSelectorWidget = View.extend({
         if (!this.model) {
             this.model = new ItemModel();
         }
-        if(this.model.get('channel') === 'input'){
+        if (this.model.get('channel') === 'input') {
             this.checkboxes = true;
-        }
-        else{
+        } else {
             this.checkboxes = false;
         }
         this.taskFolder = settings.taskFolder;
@@ -33,7 +31,7 @@ var FolderSelectorWidget = View.extend({
     },
 
     render: function () {
-        if(this.model.get('channel') === 'output'){
+        if (this.model.get('channel') === 'output') {
             this._hierarchyView = new HierarchyWidget({
                 parentView: this,
                 parentModel: this.taskFolder || this.rootPath,
@@ -45,7 +43,7 @@ var FolderSelectorWidget = View.extend({
                 checkboxes: this.checkboxes
                 // onItemClick: _.bind(this._selectItem, this)
             });
-        }else{
+        } else {
             this._hierarchyView = new HierarchyWidget({
                 parentView: this,
                 parentModel: this.rootPath,
@@ -58,20 +56,18 @@ var FolderSelectorWidget = View.extend({
                 // onItemClick: _.bind(this._selectItem, this)
             });
         }
-        
 
-        this._hierarchyView.on('selectedFolderFromList',_.bind(function(selectedFolder){
-
+        this._hierarchyView.on('selectedFolderFromList', _.bind(function (selectedFolder) {
             // this.$('#s-new-folder-name').val(selectedFolder.get('name'));
             this.selectedOutputFolder = selectedFolder;
             window.outputfolder = this.selectedOutputFolder;
-        },this)).on('selectedFolderFromCheckbox',_.bind(function(selectedFolder){
+        }, this)).on('selectedFolderFromCheckbox', _.bind(function (selectedFolder) {
             this.selectedInputFolder = selectedFolder;
-            window.inputfolder = this.selectedInputFolder;
-        },this));
+            // window.inputfolder = this.selectedInputFolder;
+        }, this));
 
         this.$el.html(
-            folderSelectorWidget(this.model.attributes)  // eslint-disable-line backbone/no-view-model-attributes
+            folderSelectorWidget(this.model.attributes) // eslint-disable-line backbone/no-view-model-attributes
         ).girderModal(this);
 
         this._hierarchyView.setElement(this.$('.s-hierarchy-widget')).render();
@@ -96,12 +92,12 @@ var FolderSelectorWidget = View.extend({
     //     var image, file;
     //     switch (this.model.get('type')) {
     //         case 'item':
-                
+
     //             this.model.set({
     //                 path: this._path(),
     //                 value: item
     //             });
-               
+
     //             this.trigger('g:saved');
     //             this.$el.modal('hide');
     //             break;
@@ -152,7 +148,7 @@ var FolderSelectorWidget = View.extend({
     //                 path: this._path(),
     //                 value: item
     //             });
-               
+
     //             this.trigger('g:saved');
     //             this.$el.modal('hide');
     //             break;
@@ -162,7 +158,7 @@ var FolderSelectorWidget = View.extend({
     //                 path: this._path(),
     //                 value: item
     //             });
-               
+
     //             this.trigger('g:saved');
     //             this.$el.modal('hide');
     //             break;
@@ -170,7 +166,6 @@ var FolderSelectorWidget = View.extend({
     // },
 
     _selectButton: function (e) {
-
         e.preventDefault();
 
         var inputEl = this.$('#s-new-folder-name');

@@ -4,17 +4,15 @@ import View from 'girder/views/View';
 import girderEvents from 'girder/events';
 import { restRequest } from 'girder/rest';
 import { confirm } from 'girder/dialog';
+import FolderModel from 'girder/models/FolderModel';
+import JobCollection from 'girder_plugins/jobs/collections/JobCollection';
 
 import { parse } from '../parser';
 import WidgetCollection from '../collections/WidgetCollection';
 import events from '../events';
-import JobsPanel from './JobsPanel';
+// import JobsPanel from './JobsPanel';
 import ControlsPanel from './ControlsPanel';
-
 import panelGroup from '../templates/panelGroup.pug';
-
-import JobCollection from 'girder_plugins/jobs/collections/JobCollection';
-import FolderModel from 'girder/models/FolderModel';
 import router from '../router';
 
 import '../stylesheets/panelGroup.styl';
@@ -79,7 +77,7 @@ var PanelGroup = View.extend({
         }
 
         params = this.parameters();
-        console.log(params)
+        console.log(params);
         _.each(params, function (value, key) {
             if (_.isArray(value)) {
                 params[key] = JSON.stringify(value);
@@ -93,10 +91,11 @@ var PanelGroup = View.extend({
         }).then(function (data) {
             events.trigger('h:submit', data);
             this.collection = new JobCollection();
-            this.collection.fetch({sort: 'created',limit: 1,sortdir: -1}).then(()=>{
-                this.newJob=this.collection.models[0].id;
-                router.setQuery('JobProgress',this.newJob, {trigger: true})
-            })
+            this.collection.fetch({sort: 'created', limit: 1, sortdir: -1}).then(() => {
+                this.newJob = this.collection.models[0].id;
+                router.setQuery('JobProgress', this.newJob, {trigger: true});
+                return null;
+            });
             return null;
         });
     },
@@ -106,11 +105,10 @@ var PanelGroup = View.extend({
      * Returns an object that maps each parameter id to it's value.
      */
     parameters: function () {
-        //console.log(this._panelViews);
-        //console.log(_.chain(this._panelViews)
+        // console.log(this._panelViews);
+        // console.log(_.chain(this._panelViews)
         //    .pluck('collection'));
-        window.test=this._panelViews;
-
+        // window.test=this._panelViews;
         return _.chain(this._panelViews)
             .pluck('collection')
             .invoke('values')
@@ -118,21 +116,21 @@ var PanelGroup = View.extend({
                 return _.extend(a, b);
             }, {})
             .value();
-            /*inputMultipleImage_girderItemId:
-                "5b2aaa8f372ec3b37d5c36ee"
-                outputThresholding_girderFolderId
-                :
-                "5b2aab8b372ec3b37d5c3723"
-                outputThresholding_name
-                :
-                "1.nrrd"
-                tableFile_girderFolderId
-                :
-                "5b2aab8b372ec3b37d5c3723"
-                tableFile_name
-                :
-                "1.csv"
-                */
+        /*  inputMultipleImage_girderItemId:
+            "5b2aaa8f372ec3b37d5c36ee"
+            outputThresholding_girderFolderId
+            :
+            "5b2aab8b372ec3b37d5c3723"
+            outputThresholding_name
+            :
+            "1.nrrd"
+            tableFile_girderFolderId
+            :
+            "5b2aab8b372ec3b37d5c3723"
+            tableFile_name
+            :
+            "1.csv"
+            */
     },
 
     /**
@@ -281,56 +279,59 @@ var PanelGroup = View.extend({
     },
     /**
      * Get option folders id
-     * 
+     *
      */
-    _getOptionFoldersPromise(e){
-        return new Promise(_.bind(function(resolve,reject){
+    _getOptionFoldersPromise(e) {
+        return new Promise(_.bind(function (resolve, reject) {
             let getOriginalFolder = () => {
                 return restRequest({
-                    url: 'folder/' + e,
+                    url: 'folder/' + e
                 }).then((res) => {
                     let folders = [];
                     let folder = new FolderModel(res);
-                    folders.push(folder)
-                    return folders
-                })
-            }
-            let getSegmentFolders = () =>{
+                    folders.push(folder);
+                    return folders;
+                });
+            };
+            let getSegmentFolders = () => {
                 return restRequest({
-                    url: 'SSR/segmentationCheckFolder/' + e,
+                    url: 'SSR/segmentationCheckFolder/' + e
                 }).then(_.bind((foldersObj) => {
                     let folders = [];
-                    for(let a=0; a < foldersObj.length; a++){
+                    for (let a = 0; a < foldersObj.length; a++) {
                         let folder = new FolderModel(foldersObj[a]);
-                        folders.push(folder)
+                        folders.push(folder);
                         // console.log(folder)
                     }
-                    return folders
-                }))
-            }
+                    return folders;
+                }));
+            };
 
-            $.when(getOriginalFolder(),getSegmentFolders()).then((folder_o, folder_s)=>{
+            $.when(getOriginalFolder(), getSegmentFolders()).then((folderO, folderS) => {
                 let folders = [];
-                // console.log(folder_s)
-                folders =  folder_o.concat(folder_s)
-                resolve(folders)
-            })
-        },this))
+                // console.log(folderS)
+                folders = folderO.concat(folderS);
+                resolve(folders);
+                return null;
+            });
+        }, this));
     },
-    getOptionFolders(e){
-        this._getOptionFoldersPromise(e).then((folders)=>{
-            this.optionFolders = folders
+    getOptionFolders(e) {
+        this._getOptionFoldersPromise(e).then((folders) => {
+            this.optionFolders = folders;
             // console.log(folders)
+            return null;
         });
     },
-    getTaskFolder(TaskFolderId){
+    getTaskFolder(TaskFolderId) {
         restRequest({
-            url: 'folder/' + TaskFolderId,
+            url: 'folder/' + TaskFolderId
         }).then((e) => {
-            let TaskFolder = new FolderModel(e)
+            let TaskFolder = new FolderModel(e);
             this.taskFolder = TaskFolder;
-            console.log('234');
-            console.log(TaskFolder);
+            // console.log('234');
+            // console.log(TaskFolder);
+            return null;
         });
     }
 });

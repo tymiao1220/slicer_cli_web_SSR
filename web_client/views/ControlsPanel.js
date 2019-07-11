@@ -4,7 +4,8 @@ import ControlWidget from './ControlWidget';
 import controlsPanel from '../templates/controlsPanel.pug';
 import '../stylesheets/controlsPanel.styl';
 
-import events from '../events';
+// import events from '../events';
+
 var ControlsPanel = Panel.extend({
     initialize: function (settings) {
         this.title = settings.title || '';

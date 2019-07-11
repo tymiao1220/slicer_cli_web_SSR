@@ -10,8 +10,8 @@ router.setQuery = function setQuery(name, value, options) {
     var curRoute = Backbone.history.fragment,
         routeParts = splitRoute(curRoute),
         queryString = parseQueryString(routeParts.name);
-     console.log(queryString);
-    //Backbone.history.start()
+    console.log(queryString);
+    // Backbone.history.start()
     if (value === undefined || value === null) {
         delete queryString[name];
     } else {
@@ -31,9 +31,9 @@ router.getQuery = function getQuery(name) {
 };
 
 router.execute = function execute(callback, args) {
-     console.log('execute');
+    console.log('execute');
     var query = parseQueryString(args.pop());
-  //  console.log(query);
+    // console.log(query);
     args.push(query);
     if (callback) {
         callback.apply(this, args);
@@ -41,17 +41,15 @@ router.execute = function execute(callback, args) {
 
     _.each(this._lastQueryString || {}, function (value, key) {
         if (!_.has(query, key)) {
-
             events.trigger('query:' + key, null, query);
         }
     });
     _.each(query, function (value, key) {
-  //      console.log(query,key);
+        // console.log(query,key);
         events.trigger('query:' + key, value, query);
     });
     events.trigger('query', query);
     this._lastQueryString = query;
-
 };
 
 export default router;

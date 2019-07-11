@@ -28,6 +28,8 @@ from .models import DockerImage, DockerImageError, \
 from six import iteritems
 import sys
 import linecache
+
+
 def deleteImage(job):
     """
     Deletes the docker images specified in the job from the local machine.
@@ -98,6 +100,7 @@ def deleteImage(job):
 
         )
 
+
 def PrintException():
     exc_type, exc_obj, tb = sys.exc_info()
     f = tb.tb_frame
@@ -106,6 +109,7 @@ def PrintException():
     linecache.checkcache(filename)
     line = linecache.getline(filename, lineno, f.f_globals)
     print 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj)
+
 
 def jobPullAndLoad(job):
     """
@@ -123,9 +127,8 @@ def jobPullAndLoad(job):
         pullList = job['kwargs']['pullList']
         loadList = job['kwargs']['loadList']
 
-
         errorState = False
-        
+
         notExistSet = set()
 
         jobModel.updateJob(
@@ -133,7 +136,7 @@ def jobPullAndLoad(job):
             log='Started to Load Docker images\n',
             status=JobStatus.RUNNING,
         )
-        
+
         try:
             docker_client = docker.from_env(version='auto')
 
@@ -265,9 +268,9 @@ def getDockerOutput(imgName, command, client):
         cont = client.containers.create(image=imgName, command=command)
         cont.start()
         ret_code = cont.wait()
-        
+
         logs = cont.logs(stdout=True, stderr=False, stream=False)
-        
+
         cont.remove()
     except Exception as err:
         if cont:
@@ -292,7 +295,7 @@ def getCliData(name, client, img, jobModel, job):
     try:
 
         if isinstance(client, docker.DockerClient) and isinstance(img, DockerImage):
-            
+
             cli_dict = getDockerOutput(name, '--list_cli', client)
             # contains nested dict
 

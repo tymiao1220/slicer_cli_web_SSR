@@ -43,7 +43,7 @@ _SLICER_TYPE_TO_GIRDER_MODEL_MAP = {
     'file': 'file',
     'item': 'item',
     'string': 'url',
-    #'directory': 'item' 
+    # 'directory': 'item'
     'directory': 'folder'
 }
 _SLICER_TYPE_TO_GIRDER_INPUT_SUFFIX_MAP = {
@@ -51,7 +51,7 @@ _SLICER_TYPE_TO_GIRDER_INPUT_SUFFIX_MAP = {
     'file': '_girderFileId',
     'item': '_girderItemId',
     'string': '_url',
-    #'directory': '_girderItemId'
+    # 'directory': '_girderItemId'
     'directory': '_girderFolderId'
 }
 
@@ -89,6 +89,7 @@ def _getCLIParameters(clim):
     print 'sortByIndex'
     print index_params
     # sort opt parameters in increasing order of name for easy lookup
+
     def get_flag(p):
         if p.flag is not None:
             return p.flag.strip('-')
@@ -113,9 +114,9 @@ def _createIndexedParamTaskSpec(param):
         parameter for which the task spec should be created
 
     """
-    # print 'in _createIndexedParamTaskSpec param.label is ' 
+    # print 'in _createIndexedParamTaskSpec param.label is '
     # print param.label  #Input Image/Output Thresholding File/Output Table File
-    # print 'in _createIndexedParamTaskSpec param.typ is ' 
+    # print 'in _createIndexedParamTaskSpec param.typ is '
     # print param.typ   #directory/file/file
 
     curTaskSpec = dict()
@@ -134,17 +135,18 @@ def _createIndexedParamTaskSpec(param):
 def _addIndexedInputParamsToHandler(index_input_params, handlerDesc):
 
     for param in index_input_params:
-        #print param.isExternalType()
+        # print param.isExternalType()
         # add to route description
         if param.isExternalType():
-            if param.flag=='-item':
+            if param.flag == '-item':
                 suffix = '_girderItemId'
                 handlerDesc.param(param.identifier() + suffix,
                                   'Girder ID of input %s - %s: %s'
                                   % (param.typ, param.identifier(), param.description),
                                   dataType='string', required=True)
-                #print param.identifier() + suffix
-                #print 'Girder ID of input %s - %s: %s' % (param.typ, param.identifier(), param.description)
+                # print param.identifier() + suffix
+                # print 'Girder ID of input %s - %s: %s' %
+                # (param.typ, param.identifier(), param.description)
             else:
                 suffix = _SLICER_TYPE_TO_GIRDER_INPUT_SUFFIX_MAP[param.typ]
                 handlerDesc.param(param.identifier() + suffix,
@@ -169,7 +171,7 @@ def _addIndexedInputParamsToTaskSpec(index_input_params, taskSpec):
 def _addIndexedOutputParamsToHandler(index_output_params, handlerDesc):
 
     for param in index_output_params:
-        if param.flag=='-item':
+        if param.flag == '-item':
             _girderOutputItemSuffix = '_girderItemId'
         # add param for parent folder to route description
             handlerDesc.param(param.identifier() + _girderOutputItemSuffix,
@@ -177,7 +179,7 @@ def _addIndexedOutputParamsToHandler(index_output_params, handlerDesc):
                               'for output %s - %s: %s'
                               % (param.typ, param.typ, param.description),
                               dataType='string', required=True)
-        else:   
+        else:
             handlerDesc.param(param.identifier() + _girderOutputFolderSuffix,
                               'Girder ID of parent folder '
                               'for output %s - %s: %s'
@@ -307,8 +309,8 @@ def _addOptionalOutputParamsToTaskSpec(opt_output_params, taskSpec, hargs):
             continue
 
         # set path if it was requested in the REST request
-        if (param.identifier() + _girderOutputFolderSuffix not in hargs['params'] or
-                param.identifier() + _girderOutputNameSuffix not in hargs['params']):
+        if (param.identifier() + _girderOutputFolderSuffix not in hargs['params'] or # noqa
+                param.identifier() + _girderOutputNameSuffix not in hargs['params']): # noqa
             continue
 
         # add to task spec
@@ -347,8 +349,8 @@ def _addReturnParameterFileParamToTaskSpec(taskSpec, hargs):
     curType = 'file'
 
     # check if return parameter file was requested in the REST request
-    if (curName + _girderOutputFolderSuffix not in hargs['params'] or
-            curName + _girderOutputNameSuffix not in hargs['params']):
+    if (curName + _girderOutputFolderSuffix not in hargs['params'] or # noqa
+            curName + _girderOutputNameSuffix not in hargs['params']): # noqa
         return
 
     # add to task spec
@@ -365,7 +367,8 @@ def _addReturnParameterFileParamToTaskSpec(taskSpec, hargs):
 
 def _createInputParamBindingSpec(param, hargs, token):
     # print 'in _createInputParamBindingSpec param is '
-    # print param #directory parameter 'inputMultipleImage'/integer parameter 'upperBound'/integer parameter 'lowerBound'
+    # print param #directory parameter 'inputMultipleImage'
+    # /integer parameter 'upperBound'/integer parameter 'lowerBound'
     curBindingSpec = dict()
     if _is_on_girder(param):
         if _SLICER_TYPE_TO_GIRDER_MODEL_MAP[param.typ] == 'url':
@@ -373,7 +376,7 @@ def _createInputParamBindingSpec(param, hargs, token):
             url = hargs['params']['url'].replace('"', '')
             curBindingSpec = wutils.httpInputSpec(url)
         else:
-            if param.flag =='-item':
+            if param.flag == '-item':
                 curBindingSpec = wutils.girderInputSpec(
                     hargs[param.identifier()],
                     resourceType='item',
@@ -399,7 +402,7 @@ def _createInputParamBindingSpec(param, hargs, token):
 def _createOutputParamBindingSpec(param, hargs, user, token):
     print '---------------------------------400---------------------------------'
     print param.flag
-    if param.flag =='-item':
+    if param.flag == '-item':
         curBindingSpec = wutils.girderOutputSpec(
             hargs[param.identifier()],
             token,
@@ -469,8 +472,8 @@ def _addOptionalInputParamBindings(opt_input_params, bspec, hargs, user, token):
                 curId = hargs['params'][param.identifier() + suffix]
 
                 hargs[param.identifier()] = curModel.load(id=curId,
-                                                      level=AccessType.READ,
-                                                      user=user)
+                                                          level=AccessType.READ,
+                                                          user=user)
 
         bspec[param.identifier()] = _createInputParamBindingSpec(param, hargs, token)
 
@@ -484,8 +487,8 @@ def _addOptionalOutputParamBindings(opt_output_params,
             continue
 
         # check if it was requested in the REST request
-        if (param.identifier() + _girderOutputFolderSuffix not in hargs['params'] or
-                param.identifier() + _girderOutputNameSuffix not in hargs['params']):
+        if (param.identifier() + _girderOutputFolderSuffix not in hargs['params'] or # noqa
+                param.identifier() + _girderOutputNameSuffix not in hargs['params']): # noqa
             continue
 
         curModel = ModelImporter.model('folder')
@@ -504,8 +507,8 @@ def _addReturnParameterFileBinding(bspec, hargs, user, token):
     curName = _return_parameter_file_name
 
     # check if return parameter file was requested in the REST request
-    if (curName + _girderOutputFolderSuffix not in hargs['params'] or
-            curName + _girderOutputNameSuffix not in hargs['params']):
+    if (curName + _girderOutputFolderSuffix not in hargs['params'] or # noqa
+            curName + _girderOutputNameSuffix not in hargs['params']): # noqa
         return
 
     curModel = ModelImporter.model('folder')
@@ -521,8 +524,9 @@ def _addReturnParameterFileBinding(bspec, hargs, user, token):
         name=hargs['params'][curName + _girderOutputNameSuffix],
         dataType='string', dataFormat='string'
     )
-    
+
     bspec[curName] = curBindingSpec
+
 
 def _is_on_girder(param):
     return param.typ in _SLICER_TYPE_TO_GIRDER_MODEL_MAP
@@ -640,13 +644,13 @@ def _addIndexedParamsToContainerArgs(index_params, containerArgs, hargs):
                 _worker_docker_data_dir,
                 hargs['params'][param.identifier() + _girderOutputNameSuffix]
             )
-        
+
         print 'containerArgs'
         print containerArgs
         containerArgs.append(curValue)
 
 
-def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource):
+def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource): # noqa
     """Generates a handler to run docker CLI using girder_worker
 
     Parameters
@@ -701,14 +705,15 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource):
     # do stuff needed to create REST endpoint for cLI
     handlerDesc = Description(clim.title).notes(str_description)
 
-    #print handlerDesc
+    # print handlerDesc
     # get CLI parameters
-    index_params, opt_params, simple_out_params= _getCLIParameters(clim)
-    
-    # print index_params [<CLIParameter 'inputMultipleImage' of type directory>, <CLIParameter 'outputThresholding' of type file>, <CLIParameter 'tableFile' of type file>]
+    index_params, opt_params, simple_out_params = _getCLIParameters(clim)
+
+    # print index_params [<CLIParameter 'inputMultipleImage' of type directory>,
+    # <CLIParameter 'outputThresholding' of type file>, <CLIParameter 'tableFile' of type file>]
     # add indexed input parameters
     index_input_params = filter(lambda p: p.channel != 'output', index_params)
-    #print index_input_params
+    # print index_input_params
     # print index_input_params [<CLIParameter 'inputMultipleImage' of type directory>]
     _addIndexedInputParamsToHandler(index_input_params, handlerDesc)
 
@@ -726,7 +731,7 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource):
     opt_output_params = filter(lambda p: p.channel == 'output', opt_params)
 
     _addOptionalOutputParamsToHandler(opt_output_params, handlerDesc)
-    #print simple_out_params
+    # print simple_out_params
     # add returnparameterfile if there are simple output params
     if len(simple_out_params) > 0:
         _addReturnParameterFileParamToHandler(handlerDesc)
@@ -745,19 +750,20 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource):
         jobModel = self.model('job', 'jobs')
         jobTitle = '.'.join((restResource.resourceName, cliName))
 
-        # User Group access control, register group into particular job so that this user can access this job
+        # User Group access control,
+        # register group into particular job so that this user can access this job
         groups = list(Group().list(user=user))
 
-        groupsAccess=[]
+        groupsAccess = []
         for eachGroup in groups:
-            eachGroupAccess = {'id':eachGroup['_id'],'level':0}
+            eachGroupAccess = {'id': eachGroup['_id'], 'level': 0}
             groupsAccess.append(eachGroupAccess)
 
         job = jobModel.createJob(title=jobTitle,
                                  type=jobTitle,
                                  handler='worker_handler',
                                  user=user,
-                                 otherFields={'access':{'groups':groupsAccess}})
+                                 otherFields={'access': {'groups': groupsAccess}})
         kwargs = {
             'validate': False,
             'auto_convert': True,
@@ -837,13 +843,13 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource):
         return jobModel.filter(job, user)
 
     handlerFunc = cliHandler
-    #print _is_on_girder
+    # print _is_on_girder
     # loadmodel stuff for indexed input params on girder
     index_input_params_on_girder = filter(_is_on_girder, index_input_params)
     # print '---------'
     # print index_input_params_on_girder
     for param in index_input_params_on_girder:
-        if param.flag=='-item':
+        if param.flag == '-item':
             curModel = 'item'
             # print curModel
             if curModel != 'url':
@@ -865,12 +871,12 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource):
                 handlerFunc = loadmodel(map=curMap,
                                         model=curModel,
                                         level=AccessType.READ)(handlerFunc)
-            
+
     # loadmodel stuff for indexed output params on girder
     index_output_params_on_girder = filter(_is_on_girder, index_output_params)
 
     for param in index_output_params_on_girder:
-        if param.flag=='-item':
+        if param.flag == '-item':
             _girderOutputItemSuffix = '_girderItemId'
             curModel = 'item'
             curMap = {param.identifier() + _girderOutputItemSuffix: param.identifier()}
@@ -1054,7 +1060,7 @@ def genRESTEndPointsForSlicerCLIsInDocker(info, restResource, dockerImages):
     return restResource
 
 
-def genRESTEndPointsForSlicerCLIsInDockerCache(restResource, dockerCache):
+def genRESTEndPointsForSlicerCLIsInDockerCache(restResource, dockerCache): # noqa
     """Generates REST end points for slicer CLIs placed in subdirectories of a
     given root directory and attaches them to a REST resource with the given
     name.
@@ -1077,19 +1083,19 @@ def genRESTEndPointsForSlicerCLIsInDockerCache(restResource, dockerCache):
     """
 
     dockerImages = dockerCache.getImageNames()
-    #print '------resourceName is-------'
-    #print restResource.resourceName
+    # print '------resourceName is-------'
+    # print restResource.resourceName
     # validate restResource argument
     if not isinstance(restResource, Resource):
         raise Exception('restResource must be a '
                         'Docker Resource')
 
     for dimg in dockerImages:
-        #print '------tag is-------'
-        #print dimg[dimg.find(':')+1:]
-        if restResource.resourceName!='slicer_cli_web_SSR':
-            if restResource.resourceName==dimg[dimg.find(':')+1:]:
-                #print 'register Images',dimg[:dimg.find(':')],'in',restResource.resourceName
+        # print '------tag is-------'
+        # print dimg[dimg.find(':')+1:]
+        if restResource.resourceName != 'slicer_cli_web_SSR':
+            if restResource.resourceName == dimg[dimg.find(':')+1:]:
+                # print 'register Images',dimg[:dimg.find(':')],'in',restResource.resourceName
                 docker_image = dockerCache.getImageByName(dimg)
                 # get CLI list
                 cliListSpec = docker_image.getCLIListSpec()
@@ -1153,7 +1159,7 @@ def genRESTEndPointsForSlicerCLIsInDockerCache(restResource, dockerCache):
                     logger.debug('Created REST endpoints for %s', cliRelPath)
 
         else:
-            #print 'register all in',restResource.resourceName
+            # print 'register all in',restResource.resourceName
             docker_image = dockerCache.getImageByName(dimg)
             # get CLI list
             cliListSpec = docker_image.getCLIListSpec()
@@ -1215,7 +1221,7 @@ def genRESTEndPointsForSlicerCLIsInDockerCache(restResource, dockerCache):
                     ['GET', (restPath, cliRelPath, 'xmlspec'),
                      cliGetXMLSpecHandlerName])
                 logger.debug('Created REST endpoints for %s', cliRelPath)
-                
+
     return restResource
 
 

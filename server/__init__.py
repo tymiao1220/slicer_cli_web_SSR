@@ -26,6 +26,7 @@ from girder.constants import AccessType
 from .rest_slicer_cli import genRESTEndPointsForSlicerCLIsInDockerCache
 from .docker_resource import DockerResource
 
+
 def _onUpload(event):
     try:
         ref = json.loads(event.info.get('reference'))
@@ -43,10 +44,11 @@ def _onUpload(event):
             'slicerCLIBindings.outputs.parameters': file['_id']
         })
 
+
 def load(info):
 
     # passed in resource name must match the attribute added to info[apiroot]
-    
+
     resource = DockerResource('slicer_cli_web_SSR')
     info['apiRoot'].slicer_cli_web_SSR = resource
 

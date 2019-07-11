@@ -19,10 +19,9 @@ var PanelGroup = View.extend({
         'click .s-info-panel-reload': 'reload',
         'click .s-info-panel-submit': 'submit',
         'click .s-remove-panel': 'removePanel',
-        'click .analysisTitle' : 'panelGroupHidden'
+        'click .analysisTitle': 'panelGroupHidden'
     },
     initialize: function () {
-
         this.panels = [];
         this._panelViews = {};
 
@@ -70,7 +69,7 @@ var PanelGroup = View.extend({
         var params, invalid = false;
 
         invalid = this.invalidModels();
-        
+
         if (invalid.length) {
             girderEvents.trigger('g:alert', {
                 icon: 'attention',
@@ -81,7 +80,7 @@ var PanelGroup = View.extend({
         }
 
         params = this.parameters();
-        
+
         _.each(params, function (value, key) {
             if (_.isArray(value)) {
                 params[key] = JSON.stringify(value);
@@ -104,10 +103,10 @@ var PanelGroup = View.extend({
      * Returns an object that maps each parameter id to it's value.
      */
     parameters: function () {
-        //console.log(this._panelViews);
-        //console.log(_.chain(this._panelViews)
+        // console.log(this._panelViews);
+        // console.log(_.chain(this._panelViews)
         //    .pluck('collection'));
-        window.test=this._panelViews;
+        // window.test = this._panelViews;
 
         return _.chain(this._panelViews)
             .pluck('collection')
@@ -116,21 +115,21 @@ var PanelGroup = View.extend({
                 return _.extend(a, b);
             }, {})
             .value();
-            /*inputMultipleImage_girderItemId:
-                "5b2aaa8f372ec3b37d5c36ee"
-                outputThresholding_girderFolderId
-                :
-                "5b2aab8b372ec3b37d5c3723"
-                outputThresholding_name
-                :
-                "1.nrrd"
-                tableFile_girderFolderId
-                :
-                "5b2aab8b372ec3b37d5c3723"
-                tableFile_name
-                :
-                "1.csv"
-                */
+        /* inputMultipleImage_girderItemId:
+            "5b2aaa8f372ec3b37d5c36ee"
+            outputThresholding_girderFolderId
+            :
+            "5b2aab8b372ec3b37d5c3723"
+            outputThresholding_name
+            :
+            "1.nrrd"
+            tableFile_girderFolderId
+            :
+            "5b2aab8b372ec3b37d5c3723"
+            tableFile_name
+            :
+            "1.csv"
+            */
     },
 
     /**
@@ -276,8 +275,8 @@ var PanelGroup = View.extend({
         this.reload();
         return this;
     },
-    panelGroupHidden:function(){
-        this.$el.css('display','none');
+    panelGroupHidden: function () {
+        this.$el.css('display', 'none');
         $('.icon-list-bullet').removeClass('hidden');
     }
 });

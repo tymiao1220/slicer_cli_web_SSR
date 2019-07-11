@@ -7,11 +7,11 @@ import tinycolor from 'tinycolor2';
  */
 var WidgetModel = Backbone.Model.extend({
     defaults: {
-        type: '',          // The specific widget type
-        title: '',         // The label to display with the widget
-        description: '',   // The description to display with the widget
-        value: '',         // The current value of the widget
-        values: []         // A list of possible values for enum types
+        type: '', // The specific widget type
+        title: '', // The label to display with the widget
+        description: '', // The description to display with the widget
+        value: '', // The current value of the widget
+        values: [] // A list of possible values for enum types
 
         // optional attributes only used for certain widget types
         /*
@@ -232,7 +232,6 @@ var WidgetModel = Backbone.Model.extend({
 
         switch (this.get('type')) {
             case 'new-file':
-                window.newfolder=model
                 parent = model.parent;
                 if (!parent || parent.resourceName !== 'folder') {
                     return 'Invalid parent model';
@@ -311,7 +310,7 @@ var WidgetModel = Backbone.Model.extend({
      */
     isGirderModel: function () {
         return _.contains(
-            ['directory', 'file', 'item', 'new-file','new-file-item', 'image'],
+            ['directory', 'file', 'item', 'new-file', 'new-file-item', 'image'],
             this.get('type')
         );
     },
