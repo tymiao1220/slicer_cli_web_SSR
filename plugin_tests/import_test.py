@@ -30,10 +30,10 @@ def tearDownModule():
     base.stopServer()
 
 
-# Test import of slicer_cli_web
+# Test import of slicer_cli_web_SSR
 class ImportPackageTest(base.TestCase):
 
-    def test_slicer_cli_web(self):
+    def test_slicer_cli_web_SSR(self):
         from girder.plugins import slicer_cli_web_SSR  # noqa
 
     def test_rest_slicer_cli(self):

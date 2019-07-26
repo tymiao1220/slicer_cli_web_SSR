@@ -98,8 +98,6 @@ def _getCLIParameters(clim):
     # index_params.sort(key=lambda p: get_flag(p))
     # opt_params.sort(key=lambda p: get_flag(p))
 
-    print 'sortByFlag'
-    print index_params
     return index_params, opt_params, simple_out_params
 
 
@@ -398,8 +396,8 @@ def _createInputParamBindingSpec(param, hargs, token):
 
 
 def _createOutputParamBindingSpec(param, hargs, user, token):
-    print '---------------------------------400---------------------------------'
-    print param.flag
+    # print '---------------------------------400---------------------------------'
+    # print param.flag
     if param.flag == '-item':
         curBindingSpec = wutils.girderOutputSpec(
             hargs[param.identifier()],
@@ -460,12 +458,12 @@ def _addOptionalInputParamBindings(opt_input_params, bspec, hargs, user, token):
 
             curModelName = _SLICER_TYPE_TO_GIRDER_MODEL_MAP[param.typ]
             if curModelName == 'url':
-                print 'curModelName == url'
-                print hargs['params']
+                # print 'curModelName == url'
+                # print hargs['params']
                 hargs[param.identifier()] = hargs['params']['URL(Region)']
             else:
-                print 'curModelName != url'
-                print curModelName
+                # print 'curModelName != url'
+                # print curModelName
                 curModel = ModelImporter.model(curModelName)
                 curId = hargs['params'][param.identifier() + suffix]
 
@@ -643,8 +641,8 @@ def _addIndexedParamsToContainerArgs(index_params, containerArgs, hargs):
                 hargs['params'][param.identifier() + _girderOutputNameSuffix]
             )
 
-        print 'containerArgs'
-        print containerArgs
+        # print 'containerArgs'
+        # print containerArgs
         containerArgs.append(curValue)
 
 
@@ -739,7 +737,7 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource): # n
     @access.user
     @describeRoute(handlerDesc)
     def cliHandler(self, **hargs):
-        print 'in cliHandler hargs is '
+        # print 'in cliHandler hargs is '
         # print hargs
         user = self.getCurrentUser()
         token = self.getCurrentToken()['_id']
@@ -823,8 +821,8 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource): # n
 
         _addReturnParameterFileToContainerArgs(containerArgs, kwargs, hargs)
 
-        print 'index_params'
-        print index_params
+        # print 'index_params'
+        # print index_params
         _addIndexedParamsToContainerArgs(index_params,
                                          containerArgs, hargs)
 
@@ -832,8 +830,8 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource): # n
 
         # schedule job
         job['kwargs'] = kwargs
-        print '-------job is-------'
-        print job
+        # print '-------job is-------'
+        # print job
         job = jobModel.save(job)
         jobModel.scheduleJob(job)
 
@@ -854,13 +852,13 @@ def genHandlerToRunDockerCLI(dockerImage, cliRelPath, cliXML, restResource): # n
 
                 suffix = '_girderItemId'
                 curMap = {param.identifier() + suffix: param.identifier()}
-                print curMap
+                # print curMap
                 handlerFunc = loadmodel(map=curMap,
                                         model=curModel,
                                         level=AccessType.READ)(handlerFunc)
         else:
             curModel = _SLICER_TYPE_TO_GIRDER_MODEL_MAP[param.typ]
-            print curModel
+            # print curModel
             if curModel != 'url':
 
                 suffix = _SLICER_TYPE_TO_GIRDER_INPUT_SUFFIX_MAP[param.typ]
