@@ -1,8 +1,8 @@
-girderTest.importPlugin('jobs', 'worker', 'slicer_cli_web_SSR');
+girderTest.importPlugin('jobs', 'worker', 'slicer_cli_web_ssr');
 
 var parser;
 girderTest.promise.done(function () {
-    parser = girder.plugins.slicer_cli_web_SSR.parser;
+    parser = girder.plugins.slicer_cli_web_ssr.parser;
 });
 
 describe('XML Schema parser', function () {

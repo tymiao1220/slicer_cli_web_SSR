@@ -1,7 +1,7 @@
 {
-    "name": "Slicer_cli_web_SSR",
-    "description": "A girder plugin for exposing slicer CLIs over the web",
-    "version": "0.2.0",
+    "name": "Slicer_cli_web_ssr",
+    "description": "A SSR plugin for exposing slicer CLIs over the web",
+    "version": "0.0.1",
     "dependencies": ["worker", "jobs"],
     "npm": {
         "dependencies": {

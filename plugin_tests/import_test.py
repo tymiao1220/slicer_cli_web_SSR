@@ -22,7 +22,7 @@ from tests import base
 
 # boiler plate to start and stop the server if needed
 def setUpModule():
-    base.enabledPlugins.append('slicer_cli_web_SSR')
+    base.enabledPlugins.append('slicer_cli_web_ssr')
     base.startServer()
 
 
@@ -30,28 +30,28 @@ def tearDownModule():
     base.stopServer()
 
 
-# Test import of slicer_cli_web_SSR
+# Test import of slicer_cli_web_ssr
 class ImportPackageTest(base.TestCase):
 
-    def test_slicer_cli_web_SSR(self):
-        from girder.plugins import slicer_cli_web_SSR  # noqa
+    def test_slicer_cli_web_ssr(self):
+        from girder.plugins import slicer_cli_web_ssr  # noqa
 
     def test_rest_slicer_cli(self):
-        from girder.plugins.slicer_cli_web_SSR import rest_slicer_cli  # noqa
+        from girder.plugins.slicer_cli_web_ssr import rest_slicer_cli  # noqa
 
     def test_docker_image_model(self):
         from girder.models.model_base import ModelImporter
 
         raised = False
         try:
-            ModelImporter.model('docker_image_model', 'slicer_cli_web_SSR')  # noqa
+            ModelImporter.model('docker_image_model', 'slicer_cli_web_ssr')  # noqa
         except Exception as e:
             raised = True
 
         self.assertFalse(raised, 'docker_image_model import failed')
 
     def test_docker_resource(self):
-        from girder.plugins.slicer_cli_web_SSR import docker_resource  # noqa
+        from girder.plugins.slicer_cli_web_ssr import docker_resource  # noqa
 
     def test_cli_list_entrypoint(self):
-        from girder.plugins.slicer_cli_web_SSR import cli_list_entrypoint  # noqa
+        from girder.plugins.slicer_cli_web_ssr import cli_list_entrypoint  # noqa

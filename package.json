@@ -1,13 +1,13 @@
 {
-  "name": "slicer_cli_web_SSR",
+  "name": "slicer_cli_web_ssr",
   "version": "0.2.0",
-  "homepage": "https://github.com/tymiao1220/slicer_cli_web_SSR",
+  "homepage": "https://github.com/tymiao1220/slicer_cli_web_ssr",
   "bugs": {
-    "url": "https://github.com/tymiao1220/slicer_cli_web_SSR/issues"
+    "url": "https://github.com/tymiao1220/slicer_cli_web_ssr/issues"
   },
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tymiao1220/slicer_cli_web_SSR.git"
+    "url": "https://github.com/tymiao1220/slicer_cli_web_ssr.git"
   }
 }

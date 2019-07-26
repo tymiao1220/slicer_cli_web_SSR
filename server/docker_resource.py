@@ -39,13 +39,13 @@ class DockerResource(Resource):
     endpoints
     """
 
-    jobType = 'slicer_cli_web_SSR_job'
+    jobType = 'slicer_cli_web_ssr_job'
 
     def __init__(self, name):
         super(DockerResource, self).__init__()
         self.currentEndpoints = {}
         self.resourceName = name
-        self.jobType = 'slicer_cli_web_SSR_job'
+        self.jobType = 'slicer_cli_web_ssr_job'
         self.route('PUT', (name, 'docker_image'), self.setImages)
         self.route('DELETE', (name, 'docker_image'), self.deleteImage)
         self.route('GET', (name, 'docker_image'), self.getDockerImages)
@@ -58,7 +58,7 @@ class DockerResource(Resource):
     def getDockerImages(self, params):
 
         dockermodel = ModelImporter.model('docker_image_model',
-                                          'slicer_cli_web_SSR')
+                                          'slicer_cli_web_ssr')
 
         dockerCache = dockermodel.loadAllImages()
         cache = dockerCache.getImages()
@@ -86,7 +86,7 @@ class DockerResource(Resource):
 
         # print name
         if name in self.currentEndpoints:
-            print name
+            # print name
             endpointData = self.currentEndpoints[name]
 
             if ':' in name:
@@ -155,7 +155,7 @@ class DockerResource(Resource):
         """
 
         dockermodel = ModelImporter.model('docker_image_model',
-                                          'slicer_cli_web_SSR')
+                                          'slicer_cli_web_ssr')
         try:
             dockermodel.removeImages(names)
 
@@ -210,11 +210,11 @@ class DockerResource(Resource):
         self.requireParams(('name',), params)
         nameList = self.parseImageNameList(params['name'])
         docker_image_model = ModelImporter.model('docker_image_model',
-                                                 'slicer_cli_web_SSR')
-        print '-----------------setImages-------------------'
-        print nameList
-        print self.jobType
-        print docker_image_model.putDockerImage(nameList, self.jobType, True)
+                                                 'slicer_cli_web_ssr')
+        # print '-----------------setImages-------------------'
+        # print nameList
+        # print self.jobType
+        # print docker_image_model.putDockerImage(nameList, self.jobType, True)
         return docker_image_model.putDockerImage(nameList, self.jobType, True)
 
     def storeEndpoints(self, imgName, cli, operation, argList):
@@ -285,7 +285,7 @@ class DockerResource(Resource):
 
             # remove all previous endpoints
             dockermodel = ModelImporter.model('docker_image_model',
-                                              'slicer_cli_web_SSR')
+                                              'slicer_cli_web_ssr')
 
             cache = dockermodel.loadAllImages()
 

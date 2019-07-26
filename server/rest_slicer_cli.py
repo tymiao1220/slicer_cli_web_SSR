@@ -1089,7 +1089,7 @@ def genRESTEndPointsForSlicerCLIsInDockerCache(restResource, dockerCache): # noq
     for dimg in dockerImages:
         # print '------tag is-------'
         # print dimg[dimg.find(':')+1:]
-        if restResource.resourceName != 'slicer_cli_web_SSR':
+        if restResource.resourceName != 'slicer_cli_web_ssr':
             if restResource.resourceName == dimg[dimg.find(':')+1:]:
                 # print 'register Images',dimg[:dimg.find(':')],'in',restResource.resourceName
                 docker_image = dockerCache.getImageByName(dimg)

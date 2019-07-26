@@ -46,11 +46,11 @@ def _onUpload(event):
 def load(info):
 
     # passed in resource name must match the attribute added to info[apiroot]
-    resource = DockerResource('slicer_cli_web_SSR')
-    info['apiRoot'].slicer_cli_web_SSR = resource
+    resource = DockerResource('slicer_cli_web_ssr')
+    info['apiRoot'].slicer_cli_web_ssr = resource
 
     dockerImageModel = ModelImporter.model('docker_image_model',
-                                           'slicer_cli_web_SSR')
+                                           'slicer_cli_web_ssr')
     dockerCache = dockerImageModel.loadAllImages()
 
     genRESTEndPointsForSlicerCLIsInDockerCache(resource, dockerCache)

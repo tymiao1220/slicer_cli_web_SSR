@@ -27,11 +27,11 @@ from tests import base
 from girder import events
 
 # boiler plate to start and stop the server
-TIMEOUT = 30
+TIMEOUT = 180
 
 
 def setUpModule():
-    base.enabledPlugins.append('slicer_cli_web_SSR')
+    base.enabledPlugins.append('slicer_cli_web_ssr')
     base.startServer()
     global JobStatus
     from girder.plugins.jobs.constants import JobStatus
@@ -66,7 +66,7 @@ class DockerImageManagementTest(base.TestCase):
 
     def testDockerAdd(self):
         # try to cache a good image to the mongo database
-        img_name = 'girder/slicer_cli_web_SSR:small'
+        img_name = 'girder/slicer_cli_web:small'
         self.assertNoImages()
         self.addImage(img_name, JobStatus.SUCCESS)
         self.imageIsLoaded(img_name, True)
@@ -75,7 +75,7 @@ class DockerImageManagementTest(base.TestCase):
     def testDockerAddBadParam(self):
         # test sending bad parameters to the PUT endpoint
         kwargs = {
-            'path': '/slicer_cli_web_SSR/slicer_cli_web_SSR/docker_image',
+            'path': '/slicer_cli_web_ssr/slicer_cli_web_ssr/docker_image',
             'user': self.admin,
             'method': 'PUT',
             'params': {'name': json.dumps(6)}
@@ -96,35 +96,35 @@ class DockerImageManagementTest(base.TestCase):
         self.assertStatus(resp, 400)
         self.assertIn('does not have a tag', resp.json['message'])
 
-    # def testDockerAddList(self):
-    #     # try to cache a good image to the mongo database
-    #     img_name = 'girder/slicer_cli_web_SSR:small'
-    #     self.assertNoImages()
-    #     self.addImage([img_name], JobStatus.SUCCESS)
-    #     self.imageIsLoaded(img_name, True)
+    def testDockerAddList(self):
+        # try to cache a good image to the mongo database
+        img_name = 'girder/slicer_cli_web:small'
+        self.assertNoImages()
+        self.addImage([img_name], JobStatus.SUCCESS)
+        self.imageIsLoaded(img_name, True)
 
     def testDockerAddWithoutVersion(self):
         # all images need a version or hash
-        img_name = 'girder/slicer_cli_web_SSR'
+        img_name = 'girder/slicer_cli_web'
         self.assertNoImages()
         self.addImage(img_name, None, 400)
         self.assertNoImages()
 
-    # def testDockerDelete(self):
-    #     # just delete the metadata in the mongo database
-    #     # don't delete the docker image
-    #     img_name = 'girder/slicer_cli_web_SSR:small'
-    #     self.assertNoImages()
-    #     self.addImage(img_name, JobStatus.SUCCESS)
-    #     self.imageIsLoaded(img_name, True)
-    #     self.deleteImage(img_name, True, False)
-    #     self.imageIsLoaded(img_name, exists=False)
-    #     self.assertNoImages()
+    def testDockerDelete(self):
+        # just delete the metadata in the mongo database
+        # don't delete the docker image
+        img_name = 'girder/slicer_cli_web:small'
+        self.assertNoImages()
+        self.addImage(img_name, JobStatus.SUCCESS)
+        self.imageIsLoaded(img_name, True)
+        self.deleteImage(img_name, True, False)
+        self.imageIsLoaded(img_name, exists=False)
+        self.assertNoImages()
 
     def testDockerDeleteFull(self):
         # attempt to delete docker image metadata and the image off the local
         # machine
-        img_name = 'girder/slicer_cli_web_SSR:small'
+        img_name = 'girder/slicer_cli_web:small'
         self.assertNoImages()
         self.addImage(img_name, JobStatus.SUCCESS)
         self.imageIsLoaded(img_name, True)
@@ -145,11 +145,11 @@ class DockerImageManagementTest(base.TestCase):
         self.imageIsLoaded(img_name, exists=False)
         self.assertNoImages()
 
-    # def testDockerPull(self):
-    #     # test an instance when the image must be pulled
-    #     # Forces the test image to be deleted
-    #     self.testDockerDeleteFull()
-    #     self.testDockerAdd()
+    def testDockerPull(self):
+        # test an instance when the image must be pulled
+        # Forces the test image to be deleted
+        self.testDockerDeleteFull()
+        self.testDockerAdd()
 
     def testBadImageDelete(self):
         # attempt to delete a non existent image
@@ -157,44 +157,44 @@ class DockerImageManagementTest(base.TestCase):
         self.assertNoImages()
         self.deleteImage(img_name, False, )
 
-    # def testXmlEndpoint(self):
-    #     # loads an image and attempts to run an arbitrary xml endpoint
+    def testXmlEndpoint(self):
+        # loads an image and attempts to run an arbitrary xml endpoint
 
-    #     img_name = 'girder/slicer_cli_web_SSR:small'
-    #     self.testDockerAdd()
+        img_name = 'girder/slicer_cli_web:small'
+        self.testDockerAdd()
 
-    #     name, tag = self.splitName(img_name)
-    #     data = self.getEndpoint()
-    #     for (image, tag) in six.iteritems(data):
-    #         for (version_name, cli) in six.iteritems(tag):
-    #             for (cli_name, info) in six.iteritems(cli):
-    #                 route = info['xmlspec']
-    #                 resp = self.request(
-    #                     path=route,
-    #                     user=self.admin,
-    #                     isJson=False)
-    #                 self.assertStatus(resp, 200)
-    #                 xmlString = self.getBody(resp)
-    #                 # TODO validate with xml schema
-    #                 self.assertNotEqual(xmlString, '')
+        name, tag = self.splitName(img_name)
+        data = self.getEndpoint()
+        for (image, tag) in six.iteritems(data):
+            for (version_name, cli) in six.iteritems(tag):
+                for (cli_name, info) in six.iteritems(cli):
+                    route = info['xmlspec']
+                    resp = self.request(
+                        path=route,
+                        user=self.admin,
+                        isJson=False)
+                    self.assertStatus(resp, 200)
+                    xmlString = self.getBody(resp)
+                    # TODO validate with xml schema
+                    self.assertNotEqual(xmlString, '')
 
-    # def testEndpointDeletion(self):
-    #     img_name = 'girder/slicer_cli_web_SSR:small'
-    #     self.testXmlEndpoint()
-    #     data = self.getEndpoint()
-    #     self.deleteImage(img_name, True)
-    #     name, tag = self.splitName(img_name)
+    def testEndpointDeletion(self):
+        img_name = 'girder/slicer_cli_web:small'
+        self.testXmlEndpoint()
+        data = self.getEndpoint()
+        self.deleteImage(img_name, True)
+        name, tag = self.splitName(img_name)
 
-    #     for (image, tag) in six.iteritems(data):
-    #         for (version_name, cli) in six.iteritems(tag):
-    #             for (cli_name, info) in six.iteritems(cli):
-    #                 route = info['xmlspec']
-    #                 resp = self.request(
-    #                     path=route,
-    #                     user=self.admin,
-    #                     isJson=False)
-    #                 # xml route should have been deleted
-    #                 self.assertStatus(resp, 400)
+        for (image, tag) in six.iteritems(data):
+            for (version_name, cli) in six.iteritems(tag):
+                for (cli_name, info) in six.iteritems(cli):
+                    route = info['xmlspec']
+                    resp = self.request(
+                        path=route,
+                        user=self.admin,
+                        isJson=False)
+                    # xml route should have been deleted
+                    self.assertStatus(resp, 400)
 
     def testAddBadImage(self):
         # job should fail gracefully after pulling the image
@@ -248,7 +248,7 @@ class DockerImageManagementTest(base.TestCase):
             self.assertNotHasKeys(data[userAndRepo][tag], [cli])
 
     def getEndpoint(self):
-        resp = self.request(path='/slicer_cli_web_SSR/slicer_cli_web_SSR/docker_image',
+        resp = self.request(path='/slicer_cli_web_ssr/slicer_cli_web_ssr/docker_image',
                             user=self.admin)
         self.assertStatus(resp, 200)
         return json.loads(self.getBody(resp))
@@ -271,20 +271,20 @@ class DockerImageManagementTest(base.TestCase):
             def tempListener(self, girderEvent):
                 job = girderEvent.info['job']
 
-                if (job['type'] == 'slicer_cli_web_SSR_job' and
+                if (job['type'] == 'slicer_cli_web_ssr_job' and
                         job['status'] in (JobStatus.SUCCESS, JobStatus.ERROR)):
                     self.assertEqual(job['status'], status,
                                      'The status of the job should match')
-                    events.unbind('jobs.job.update.after', 'slicer_cli_web_SSR_del')
+                    events.unbind('jobs.job.update.after', 'slicer_cli_web_ssr_del')
                     job_status[0] = job['status']
                     event.set()
 
             self.delHandler = types.MethodType(tempListener, self)
 
-            events.bind('jobs.job.update.after', 'slicer_cli_web_SSR_del',
+            events.bind('jobs.job.update.after', 'slicer_cli_web_ssr_del',
                         self.delHandler)
 
-        resp = self.request(path='/slicer_cli_web_SSR/slicer_cli_web_SSR/docker_image',
+        resp = self.request(path='/slicer_cli_web_ssr/slicer_cli_web_ssr/docker_image',
                             user=self.admin, method='DELETE',
                             params={'name': json.dumps(name),
                                     'delete_from_local_repo':
@@ -324,23 +324,23 @@ class DockerImageManagementTest(base.TestCase):
         def tempListener(self, girderEvent):
             job = girderEvent.info['job']
 
-            if (job['type'] == 'slicer_cli_web_SSR_job' and
+            if (job['type'] == 'slicer_cli_web_ssr_job' and
                     job['status'] in (JobStatus.SUCCESS, JobStatus.ERROR)):
                 self.assertEqual(job['status'], status,
                                  'The status of the job should match')
                 job_status[0] = job['status']
 
-                events.unbind('jobs.job.update.after', 'slicer_cli_web_SSR_add')
+                events.unbind('jobs.job.update.after', 'slicer_cli_web_ssr_add')
 
                 event.set()
         if initialStatus == 200:
             self.addHandler = types.MethodType(tempListener, self)
 
             events.bind('jobs.job.update.after',
-                        'slicer_cli_web_SSR_add', self.addHandler)
+                        'slicer_cli_web_ssr_add', self.addHandler)
 
         resp = self.request(
-            path='/slicer_cli_web_SSR/slicer_cli_web_SSR/docker_image',
+            path='/slicer_cli_web_ssr/slicer_cli_web_ssr/docker_image',
             user=self.admin, method='PUT', params={'name': json.dumps(name)},
             isJson=initialStatus == 200)
 

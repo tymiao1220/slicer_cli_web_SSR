@@ -1,8 +1,8 @@
-girderTest.importPlugin('jobs', 'worker', 'slicer_cli_web_SSR');
+girderTest.importPlugin('jobs', 'worker', 'slicer_cli_web_ssr');
 var slicer;
 
 girderTest.promise.done(function () {
-    slicer = girder.plugins.slicer_cli_web_SSR;
+    slicer = girder.plugins.slicer_cli_web_ssr;
 });
 
 describe('widget model', function () {
@@ -370,7 +370,7 @@ describe('control widget view', function () {
         hInit = hProto.initialize;
         hRender = hProto.render;
 
-        hProtoS = girder.plugins.slicer_cli_web_SSR.views.widgets.HierarchyWidget.prototype;
+        hProtoS = girder.plugins.slicer_cli_web_ssr.views.widgets.HierarchyWidget.prototype;
         hInitS = hProtoS.initialize;
         hRenderS = hProtoS.render;
 

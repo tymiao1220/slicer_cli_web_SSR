@@ -108,7 +108,7 @@ def PrintException():
     filename = f.f_code.co_filename
     linecache.checkcache(filename)
     line = linecache.getline(filename, lineno, f.f_globals)
-    print 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj)
+    # print 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj)
 
 
 def jobPullAndLoad(job):
@@ -162,7 +162,7 @@ def jobPullAndLoad(job):
         cache, loadingError = LoadMetadata(jobModel, job, docker_client,
                                            pullList, loadList, notExistSet)
         imageModel = ModelImporter.model('docker_image_model',
-                                         'slicer_cli_web_SSR')
+                                         'slicer_cli_web_ssr')
 
         imageModel.saveAllImgs(cache)
         if errorState is False and loadingError is False:
@@ -284,8 +284,8 @@ def getDockerOutput(imgName, command, client):
             'Attempt to docker run %s %s failed ' % (
                 imgName, command) + str(err), imgName)
     # 06/19/2018 ret_code is object instead of a value may caused by package version
-    # if ret_code['StatusCode'] != 0:
-    if ret_code != 0:
+    if ret_code['StatusCode'] != 0:
+    # if ret_code != 0:
         raise DockerImageError(
             'Attempt to docker run %s %s failed' % (imgName, command), imgName)
     return logs

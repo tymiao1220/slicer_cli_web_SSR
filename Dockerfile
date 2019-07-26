@@ -84,8 +84,8 @@ RUN cd $BUILD_PATH && \
 # Install ctk-cli
 RUN conda install --yes -c cdeepakroy ctk-cli=1.4.1
 
-# copy slicer_cli_web_SSR files
-ENV slicer_cli_web_SSR_path=$BUILD_PATH/slicer_cli_web_SSR
-RUN mkdir -p $slicer_cli_web_SSR_path
-COPY . $slicer_cli_web_SSR_path/
-WORKDIR $slicer_cli_web_SSR_path/serverMac
+# copy slicer_cli_web_ssr files
+ENV slicer_cli_web_ssr_path=$BUILD_PATH/slicer_cli_web_ssr
+RUN mkdir -p $slicer_cli_web_ssr_path
+COPY . $slicer_cli_web_ssr_path/
+WORKDIR $slicer_cli_web_ssr_path/serverMac
