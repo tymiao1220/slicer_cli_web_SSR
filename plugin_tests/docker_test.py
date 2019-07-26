@@ -324,11 +324,6 @@ class DockerImageManagementTest(base.TestCase):
         def tempListener(self, girderEvent):
             job = girderEvent.info['job']
 
-            print 'expected status'
-            print status
-            print 'job status'
-            print job['status']
-
             if (job['type'] == 'slicer_cli_web_SSR_job' and
                     job['status'] in (JobStatus.SUCCESS, JobStatus.ERROR)):
                 self.assertEqual(job['status'], status,

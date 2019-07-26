@@ -86,8 +86,6 @@ def _getCLIParameters(clim):
 
     index_params.sort(key=lambda p: p.index)
 
-    print 'sortByIndex'
-    print index_params
     # sort opt parameters in increasing order of name for easy lookup
 
     def get_flag(p):
