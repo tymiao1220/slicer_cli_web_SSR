@@ -192,7 +192,7 @@ def _addIndexedOutputParamsToHandler(index_output_params, handlerDesc):
 def _addIndexedOutputParamsToTaskSpec(index_output_params, taskSpec, hargs):
 
     for param in index_output_params:
-        print param
+        # print param
         # add to task spec
         curTaskSpec = _createIndexedParamTaskSpec(param)
 
