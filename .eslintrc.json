@@ -1,3 +1,9 @@
 {
-  "extends": "girder"
+  "extends": "girder",
+  "env": {
+      "es6": true
+  },
+  "globals": {
+      "Promise": true
+  }
 }

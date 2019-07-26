@@ -1,13 +1,13 @@
 {
-  "name": "slicer_cli_web",
+  "name": "slicer_cli_web_SSR",
   "version": "0.2.0",
-  "homepage": "https://github.com/girder/slicer_cli_web",
+  "homepage": "https://github.com/tymiao1220/slicer_cli_web_SSR",
   "bugs": {
-    "url": "https://github.com/girder/slicer_cli_web/issues"
+    "url": "https://github.com/tymiao1220/slicer_cli_web_SSR/issues"
   },
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/girder/slicer_cli_web.git"
+    "url": "https://github.com/tymiao1220/slicer_cli_web_SSR.git"
   }
 }

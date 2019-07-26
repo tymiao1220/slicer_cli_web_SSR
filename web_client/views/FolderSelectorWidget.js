@@ -12,6 +12,7 @@ import HierarchyWidget from './widgets/HierarchyWidget';
 import folderSelectorWidget from '../templates/folderSelectorWidget.pug';
 // import events from '../events';
 
+// TODO: channel is input, save selected folder
 var FolderSelectorWidget = View.extend({
     events: {
         'submit .s-new-folder-select-form': '_selectButton'
@@ -56,14 +57,10 @@ var FolderSelectorWidget = View.extend({
                 // onItemClick: _.bind(this._selectItem, this)
             });
         }
-
         this._hierarchyView.on('selectedFolderFromList', _.bind(function (selectedFolder) {
-            // this.$('#s-new-folder-name').val(selectedFolder.get('name'));
             this.selectedOutputFolder = selectedFolder;
-            window.outputfolder = this.selectedOutputFolder;
         }, this)).on('selectedFolderFromCheckbox', _.bind(function (selectedFolder) {
             this.selectedInputFolder = selectedFolder;
-            // window.inputfolder = this.selectedInputFolder;
         }, this));
 
         this.$el.html(

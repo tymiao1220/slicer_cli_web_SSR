@@ -4,6 +4,7 @@ import ItemSelectorWidget from './ItemSelectorWidget';
 import JobsPanel from './JobsPanel';
 import Panel from './Panel';
 import PanelGroup from './PanelGroup';
+import * as widgets from './widgets';
 
 export {
     ControlWidget,
@@ -11,5 +12,6 @@ export {
     ItemSelectorWidget,
     JobsPanel,
     Panel,
-    PanelGroup
+    PanelGroup,
+    widgets
 };

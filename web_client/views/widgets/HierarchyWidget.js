@@ -10,12 +10,10 @@ import EditCollectionWidget from 'girder/views/widgets/EditCollectionWidget';
 import EditFolderWidget from 'girder/views/widgets/EditFolderWidget';
 import EditItemWidget from 'girder/views/widgets/EditItemWidget';
 import FolderInfoWidget from 'girder/views/widgets/FolderInfoWidget';
-
 import ItemListWidget from 'girder/views/widgets/ItemListWidget';
 import ItemModel from 'girder/models/ItemModel';
 import MetadataWidget from 'girder/views/widgets/MetadataWidget';
 import router from 'girder/router';
-// import UploadWidget from './SsrUploadWidget';
 import View from 'girder/views/View';
 import { AccessType } from 'girder/constants';
 import { confirm } from 'girder/dialog';
@@ -27,7 +25,6 @@ import HierarchyBreadcrumbTemplate from 'girder/templates/widgets/hierarchyBread
 import HierarchyWidgetTemplate from 'girder/templates/widgets/hierarchyWidget.pug';
 
 import FolderListWidget from './FolderListWidget';
-
 import 'girder/stylesheets/widgets/hierarchyWidget.styl';
 
 import 'bootstrap/js/dropdown';
@@ -250,7 +247,6 @@ var HierarchyWidget = View.extend({
         if (unparsedQueryString.length > 0) {
             unparsedQueryString = '?' + unparsedQueryString;
         }
-        console.log(unparsedQueryString);
         if (this._routing) {
             let route;
             if (this.baseRoute) {

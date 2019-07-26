@@ -53,11 +53,13 @@ var ControlWidget = View.extend({
         if (options && options.norender) {
             return this;
         }
-        // console.log('---------------50--------------');
-        // console.log(this.optionFolders);
-        let templateAttributes = Object.assign(this.model.attributes, {'optionFolders': this.optionFolders});
+        // console.log('---------------56--------------');
+        // console.log(this.model.attributes);
+        // let templateAttributes = Object.assign(this.model.attributes, {'optionFolders': this.optionFolders});
+        this.model.set('optionFolders', this.optionFolders);
         // console.log(templateAttributes);
-        this.$el.html(this.template()(templateAttributes)); // eslint-disable-line backbone/no-view-model-attributes
+        // console.log(this.model.attributes);
+        this.$el.html(this.template()(this.model.attributes)); // eslint-disable-line backbone/no-view-model-attributes
         this.$('.s-control-item[data-type="range"] input').slider();
         this.$('.s-control-item[data-type="color"] .input-group').colorpicker({});
         this.$('[data-toggle="tooltip"]').tooltip({container: 'body'});

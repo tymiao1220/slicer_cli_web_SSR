@@ -287,6 +287,49 @@ describe('XML Schema parser', function () {
                 channel: 'output'
             });
         });
+        it('output item', function () {
+            var xml = $.parseXML(
+                '<directory>' +
+                    '<name>foo</name>' +
+                    '<flag>item</flag>' +
+                    '<channel>output</channel>' +
+                    '<label>arg1</label>' +
+                    '<description>A description</description>' +
+                    '</directory>'
+            );
+
+            expect(parser.param(
+                $(xml).find('directory').get(0)
+            )).toEqual({
+                type: 'new-item',
+                slicerType: 'directory',
+                id: 'foo',
+                flag: 'item',
+                title: 'arg1',
+                description: 'A description',
+                channel: 'output'
+            });
+        });
+        it('output directory', function () {
+            var xml = $.parseXML(
+                '<directory>' +
+                    '<name>foo</name>' +
+                    '<channel>output</channel>' +
+                    '<label>arg1</label>' +
+                    '<description>A description</description>' +
+                    '</directory>'
+            );
+            expect(parser.param(
+                $(xml).find('directory').get(0)
+            )).toEqual({
+                type: 'new-directory',
+                slicerType: 'directory',
+                title: 'arg1',
+                description: 'A description',
+                channel: 'output',
+                id: 'foo'
+            });
+        });
     });
 
     describe('default value', function () {
@@ -517,6 +560,38 @@ describe('XML Schema parser', function () {
             '<license></license>',
             '<contributor>Daniel Blezek</contributor>',
             '<parameters>',
+            '<label>IO</label>',
+            '<description>Input/output parameters</description>',
+            '<directory>',
+            '<name>ReferenceImages</name>',
+            '<label>Input Ori image</label>',
+            '<description>Input An Ori Image(.nrrd)[Folder type]</description>',
+            '<channel>input</channel>',
+            '<index>0</index>',
+            '</directory>',
+            '<directory fileExtensions=".nrrd" reference="ReferenceImages">',
+            '<name>outputNrrd</name>',
+            '<label>Output Label in Nrrd</label>',
+            '<description>Otsu[Folder type]</description>',
+            '<channel>output</channel>',
+            '<index>1</index>',
+            '</directory>',
+            '<directory>',
+            '<name>ReferenceLabel</name>',
+            '<label>Reference Label</label>',
+            '<description>Perious SEG Image (*.nrrd)[Item type]</description>',
+            '<flag>item</flag>',
+            '<channel>input</channel>',
+            '<index>2</index>',
+            '</directory>',
+            '<directory>',
+            '<name>ReferenceLabel</name>',
+            '<label>Reference Label</label>',
+            '<description>Perious SEG Image (*.nrrd)[Item type]</description>',
+            '<flag>item</flag>',
+            '<channel>output</channel>',
+            '<index>3</index>',
+            '</directory>',
             '<label>Scalar Parameters</label>',
             '<description>',
             'Variations on scalar parameters',
@@ -583,7 +658,7 @@ describe('XML Schema parser', function () {
             '</executable>'
         ].join('');
 
-        console.log(JSON.stringify(parser.parse(spec)));
+        // console.log(JSON.stringify(parser.parse(spec)));
 
         expect(
             parser.parse(spec)
@@ -599,6 +674,46 @@ describe('XML Schema parser', function () {
                     {
                         'advanced': false,
                         'groups': [
+                            {
+                                'label': 'IO',
+                                'description': 'Input/output parameters',
+                                'parameters': [
+                                    {
+                                        'type': 'directory',
+                                        'slicerType': 'directory',
+                                        'id': 'ReferenceImages',
+                                        'title': 'Input Ori image',
+                                        'description': 'Input An Ori Image(.nrrd)[Folder type]',
+                                        'channel': 'input'
+                                    },
+                                    {
+                                        'type': 'new-directory',
+                                        'slicerType': 'directory',
+                                        'id': 'outputNrrd',
+                                        'title': 'Output Label in Nrrd',
+                                        'description': 'Otsu[Folder type]',
+                                        'channel': 'output'
+                                    },
+                                    {
+                                        'type': 'item',
+                                        'slicerType': 'directory',
+                                        'id': 'ReferenceLabel',
+                                        'title': 'Reference Label',
+                                        'description': 'Perious SEG Image (*.nrrd)[Item type]',
+                                        'channel': 'input',
+                                        'flag': 'item'
+                                    },
+                                    {
+                                        'type': 'new-item',
+                                        'slicerType': 'directory',
+                                        'id': 'ReferenceLabel',
+                                        'title': 'Reference Label',
+                                        'description': 'Perious SEG Image (*.nrrd)[Item type]',
+                                        'channel': 'output',
+                                        'flag': 'item'
+                                    }
+                                ]
+                            },
                             {
                                 'label': 'Scalar Parameters',
                                 'description': 'Variations on scalar parameters',

@@ -170,7 +170,7 @@ var ItemSelectorWidget = View.extend({
                         .text('You must provide a name for the new file.');
                     return;
                 }
-                console.log('new-file-item');
+                // console.log('new-file-item');
                 // the parent must be a folder
                 if (parent.resourceName !== 'folder') {
                     errorEl.removeClass('hidden')
@@ -186,8 +186,8 @@ var ItemSelectorWidget = View.extend({
                         folderId: parent.id
                     })
                 });
-                console.log('new-file');
-                console.log(this.model);
+                // console.log('new-file');
+                // console.log(this.model);
                 break;
 
             case 'new-file-item':

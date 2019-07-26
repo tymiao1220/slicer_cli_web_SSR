@@ -310,7 +310,7 @@ var WidgetModel = Backbone.Model.extend({
      */
     isGirderModel: function () {
         return _.contains(
-            ['directory', 'file', 'item', 'new-file', 'new-file-item', 'image'],
+            ['directory', 'file', 'item', 'new-file', 'new-item', 'new-directory', 'image'],
             this.get('type')
         );
     },
@@ -327,6 +327,13 @@ var WidgetModel = Backbone.Model.extend({
      */
     isItem: function () {
         return this.get('type') === 'item';
+    },
+
+    /**
+     * True if the value represents a directory stored in girder.
+     */
+    isDirectory: function () {
+        return this.get('type') === 'directory';
     },
 
     /**

@@ -84,20 +84,36 @@ var PanelGroup = View.extend({
             }
         });
         // post the job to the server
+        // restRequest({
+        //     url: this._submit,
+        //     type: 'POST',
+        //     data: params
+        // }).then(function (data) {
+        //     events.trigger('h:submit', data);
+        //     this.collection = new JobCollection();
+        //     this.collection.fetch({sort: 'created', limit: 1, sortdir: -1})
+        //         .then(() => {
+        //             // this.newJob = this.collection.models[0].id;
+        //             this.newJob = this.collection.at(0).get('id');
+        //             router.setQuery('JobProgress', this.newJob, {trigger: true});
+        //             return null;
+        //         });
+        //     return null;
+        // });
+        // CHECK: chain
         restRequest({
             url: this._submit,
             type: 'POST',
             data: params
         }).then(function (data) {
             events.trigger('h:submit', data);
-            this.collection = new JobCollection();
-            this.collection.fetch({sort: 'created', limit: 1, sortdir: -1}).then(() => {
-                this.newJob = this.collection.models[0].id;
+            return new JobCollection();
+        }).fetch({sort: 'created', limit: 1, sortdir: -1})
+            .then((collection) => {
+                this.newJob = collection.at(0).get('id');
                 router.setQuery('JobProgress', this.newJob, {trigger: true});
                 return null;
             });
-            return null;
-        });
     },
 
     /**
@@ -282,6 +298,7 @@ var PanelGroup = View.extend({
      *
      */
     _getOptionFoldersPromise(e) {
+        // eslint-disable-next-line
         return new Promise(_.bind(function (resolve, reject) {
             let getOriginalFolder = () => {
                 return restRequest({

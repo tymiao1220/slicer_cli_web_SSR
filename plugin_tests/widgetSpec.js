@@ -1,6 +1,6 @@
 girderTest.importPlugin('jobs', 'worker', 'slicer_cli_web_SSR');
-
 var slicer;
+
 girderTest.promise.done(function () {
     slicer = girder.plugins.slicer_cli_web_SSR;
 });
@@ -265,6 +265,7 @@ describe('widget model', function () {
         expect(w.isEnumeration()).toBe(false);
         expect(w.isFile()).toBe(true);
         expect(w.isItem()).toBe(false);
+        expect(w.isDirectory()).toBe(false);
     });
     it('item', function () {
         var w = new slicer.models.WidgetModel({
@@ -278,6 +279,21 @@ describe('widget model', function () {
         expect(w.isEnumeration()).toBe(false);
         expect(w.isFile()).toBe(false);
         expect(w.isItem()).toBe(true);
+        expect(w.isDirectory()).toBe(false);
+    });
+    it('directory', function () {
+        var w = new slicer.models.WidgetModel({
+            type: 'directory',
+            title: 'directory widget'
+        });
+        expect(w.isNumeric()).toBe(false);
+        expect(w.isBoolean()).toBe(false);
+        expect(w.isVector()).toBe(false);
+        expect(w.isColor()).toBe(false);
+        expect(w.isEnumeration()).toBe(false);
+        expect(w.isFile()).toBe(false);
+        expect(w.isItem()).toBe(false);
+        expect(w.isDirectory()).toBe(true);
     });
     it('invalid', function () {
         var w = new slicer.models.WidgetModel({
@@ -334,7 +350,7 @@ describe('widget collection', function () {
 });
 
 describe('control widget view', function () {
-    var $el, hInit, hRender, hProto, parentView = {
+    var $el, hInit, hRender, hProto, hProtoS, hInitS, hRenderS, parentView = {
         registerChildView: function () {}
     };
 
@@ -354,12 +370,18 @@ describe('control widget view', function () {
         hInit = hProto.initialize;
         hRender = hProto.render;
 
+        hProtoS = girder.plugins.slicer_cli_web_SSR.views.widgets.HierarchyWidget.prototype;
+        hInitS = hProtoS.initialize;
+        hRenderS = hProtoS.render;
+
         $el = $('<div/>').appendTo('body');
     });
 
     afterEach(function () {
         hProto.initialize = hInit;
         hProto.render = hRender;
+        hProtoS.initialize = hInitS;
+        hProtoS.render = hRenderS;
         $el.remove();
     });
 
@@ -709,31 +731,149 @@ describe('control widget view', function () {
 
         w.render();
         checkWidgetCommon(w);
-
         slicer.rootPath = {};
         w.$('.s-select-file-button').click();
+
         expect(arg.parentModel).toBe(girder.auth.getCurrentUser());
 
         // selecting without a file name entered should error
-        $modal.find('.s-select-button').click();
+        $modal.find('.s-new-file-select-form').submit();
         expect($modal.find('.form-group').hasClass('has-error')).toBe(true);
         expect($modal.find('.s-modal-error').hasClass('hidden')).toBe(false);
 
         // selecting with a file name in a collection should error
         $modal.find('#s-new-file-name').val('my file');
         hView.parentModel = collection;
-        $modal.find('.s-select-button').click();
+        $modal.find('.s-new-file-select-form').submit();
         expect($modal.find('.form-group').hasClass('has-error')).toBe(false);
         expect($modal.find('.s-modal-error').hasClass('hidden')).toBe(false);
 
         // selecting a file in a folder should succeed
         hView.parentModel = folder;
-        $modal.find('.s-select-button').click();
+        $modal.find('.s-new-file-select-form').submit();
         expect($modal.find('.form-group').hasClass('has-error')).toBe(false);
         expect($modal.find('.s-modal-error').hasClass('hidden')).toBe(true);
         expect(w.model.get('path')).toEqual([]);
         expect(w.model.get('value').get('name')).toBe('my file');
+        // reset the environment
+        $modal.modal('hide');
+        $modal.remove();
+    });
 
+    // it('new-item', function () {
+    //     var arg,
+    //         hView,
+    //         collection = new girder.models.CollectionModel({id: 'model id', name: 'b'}),
+    //         folder = new girder.models.FolderModel({id: 'folder id', name: 'c'}),
+    //         $modal = $('<div id="g-dialog-container"/>').appendTo('body');
+
+    //     hProto.initialize = function (_arg) {
+    //         arg = _arg;
+    //         hView = this;
+    //         this.breadcrumbs = [];
+    //     };
+    //     hProto.render = function () {};
+    //     var w = new slicer.views.ControlWidget({
+    //         parentView: parentView,
+    //         el: $el.get(0),
+    //         model: new slicer.models.WidgetModel({
+    //             type: 'new-item',
+    //             title: 'Title',
+    //             id: 'file-widget'
+    //         })
+    //     });
+
+    //     w.render();
+    //     checkWidgetCommon(w);
+
+    //     slicer.rootPath = {};
+    //     w.$('.s-select-file-button').click();
+    //     expect(arg.parentModel).toBe(girder.auth.getCurrentUser());
+
+    //     // selecting without a file name entered should error
+    //     $modal.find('.s-new-file-select-form').submit();
+    //     expect($modal.find('.form-group').hasClass('has-error')).toBe(true);
+    //     expect($modal.find('.s-modal-error').hasClass('hidden')).toBe(false);
+
+    //     // selecting with an item in a collection should error
+    //     $modal.find('#s-new-file-name').val('my file');
+    //     hView.parentModel = collection;
+    //     $modal.find('.s-new-file-select-form').submit();
+    //     expect($modal.find('.form-group').hasClass('has-error')).toBe(false);
+    //     expect($modal.find('.s-modal-error').hasClass('hidden')).toBe(false);
+
+    //     // selecting an item in a folder should error
+    //     hView.parentModel = folder;
+    //     $modal.find('.s-new-file-select-form').submit();
+    //     expect($modal.find('.form-group').hasClass('has-error')).toBe(false);
+    //     expect($modal.find('.s-modal-error').hasClass('hidden')).toBe(false);
+
+    //     // selecting an item in a folder should succeed
+    //     hView.parentModel = item;
+    //     $modal.find('.s-new-file-select-form').submit();
+    //     expect($modal.find('.form-group').hasClass('has-error')).toBe(false);
+    //     expect($modal.find('.s-modal-error').hasClass('hidden')).toBe(true);
+    //     expect(w.model.get('path')).toEqual([]);
+    //     expect(w.model.get('value').get('name')).toBe('my file');
+    //     // reset the environment
+    //     $modal.modal('hide');
+    //     $modal.remove();
+    // });
+
+    it('new-directory', function () {
+        var arg,
+            hView,
+            collection = new girder.models.CollectionModel({id: 'model id', name: 'b'}),
+            folder = new girder.models.FolderModel({id: 'folder id', name: 'c'}),
+            $modal = $('<div id="g-dialog-container"/>').appendTo('body');
+
+        hProtoS.initialize = function (_arg) {
+            arg = _arg;
+            hView = this;
+            this.breadcrumbs = [];
+        };
+        hProtoS.render = function () {};
+        var w = new slicer.views.ControlWidget({
+            parentView: parentView,
+            el: $el.get(0),
+            model: new slicer.models.WidgetModel({
+                type: 'new-directory',
+                title: 'Title',
+                id: 's-new-folder-name',
+                channel: 'output'
+            })
+        });
+
+        w.render();
+        checkWidgetCommon(w);
+        slicer.rootPath = {};
+        w.$('.s-select-folder-button').click();
+        // console.log('828');
+        // console.log(arg.parentModel);
+        // console.log(girder.auth.getCurrentUser());
+        // console.log('832');
+        expect(arg.parentModel).toBe(girder.auth.getCurrentUser());
+        // console.log('834');
+        // selecting without a directory name entered should error
+        $modal.find('.s-new-folder-select-form').submit();
+        expect($modal.find('.form-group').hasClass('has-error')).toBe(true);
+        expect($modal.find('.s-modal-error').hasClass('hidden')).toBe(false);
+
+        // selecting with a directory in a collection should error
+        $modal.find('#s-new-folder-name').val('my folder');
+        hView.parentModel = collection;
+        $modal.find('.s-new-folder-select-form').submit();
+        expect($modal.find('.form-group').hasClass('has-error')).toBe(false);
+        expect($modal.find('.s-modal-error').hasClass('hidden')).toBe(false);
+
+        // selecting a directory in a folder should pass
+        hView.parentModel = folder;
+        $modal.find('.s-new-folder-select-form').submit();
+        expect($modal.find('.form-group').hasClass('has-error')).toBe(false);
+        expect($modal.find('.s-modal-error').hasClass('hidden')).toBe(true);
+
+        expect(w.model.get('path')).toEqual([]);
+        expect(w.model.get('value')).toBe('my folder');
         // reset the environment
         $modal.modal('hide');
         $modal.remove();

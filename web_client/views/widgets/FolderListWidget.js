@@ -24,14 +24,8 @@ var FolderListWidget = View.extend({
         },
         'change .g-list-checkbox': function (event) {
             const target = $(event.currentTarget);
-
-            // console.log('cool');
-            // window.js = $('.g-list-checkbox')
-            // window.not = target;
             this.checked = [];
             this.$('.g-list-checkbox').not(target).prop('checked', false);
-            // $('.g-ori-container .g-list-checkbox').not(target).prop('checked', false);
-            // $('.g-seg-container .g-list-checkbox').not(target).prop('checked', false);
             const cid = target.attr('g-folder-cid');
             if (target.prop('checked')) {
                 this.checked.push(cid);

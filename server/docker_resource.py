@@ -39,13 +39,13 @@ class DockerResource(Resource):
     endpoints
     """
 
-    jobType = 'slicer_cli_web_job'
+    jobType = 'slicer_cli_web_SSR_job'
 
     def __init__(self, name):
         super(DockerResource, self).__init__()
         self.currentEndpoints = {}
         self.resourceName = name
-        self.jobType = 'slicer_cli_web_job'
+        self.jobType = 'slicer_cli_web_SSR_job'
         self.route('PUT', (name, 'docker_image'), self.setImages)
         self.route('DELETE', (name, 'docker_image'), self.deleteImage)
         self.route('GET', (name, 'docker_image'), self.getDockerImages)
