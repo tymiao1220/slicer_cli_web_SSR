@@ -298,7 +298,7 @@ class DockerImageManagementTest(base.TestCase):
                 self.fail('A status ok or code 200 should not have been '
                           'recieved for deleting the image %s' % str(name))
             except Exception:
-                    pass
+                pass
         if deleteDockerImage:
             if not event.wait(TIMEOUT):
                 del self.delHandler

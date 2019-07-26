@@ -26,8 +26,8 @@ import json
 from .models import DockerImage, DockerImageError, \
     DockerImageNotFoundError, DockerCache
 from six import iteritems
-import sys
-import linecache
+# import sys
+# import linecache
 
 
 def deleteImage(job):
@@ -101,14 +101,14 @@ def deleteImage(job):
         )
 
 
-def PrintException():
-    exc_type, exc_obj, tb = sys.exc_info()
-    f = tb.tb_frame
-    lineno = tb.tb_lineno
-    filename = f.f_code.co_filename
-    linecache.checkcache(filename)
-    line = linecache.getline(filename, lineno, f.f_globals)
-    # print 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj)
+# def PrintException():
+#     exc_type, exc_obj, tb = sys.exc_info()
+#     f = tb.tb_frame
+#     lineno = tb.tb_lineno
+#     filename = f.f_code.co_filename
+#     linecache.checkcache(filename)
+#     line = linecache.getline(filename, lineno, f.f_globals)
+#     print 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj)
 
 
 def jobPullAndLoad(job):
@@ -284,8 +284,8 @@ def getDockerOutput(imgName, command, client):
             'Attempt to docker run %s %s failed ' % (
                 imgName, command) + str(err), imgName)
     # 06/19/2018 ret_code is object instead of a value may caused by package version
-    if ret_code['StatusCode'] != 0:
     # if ret_code != 0:
+    if ret_code['StatusCode'] != 0:
         raise DockerImageError(
             'Attempt to docker run %s %s failed' % (imgName, command), imgName)
     return logs
@@ -297,12 +297,6 @@ def getCliData(name, client, img, jobModel, job):
         if isinstance(client, docker.DockerClient) and isinstance(img, DockerImage):
 
             cli_dict = getDockerOutput(name, '--list_cli', client)
-            # contains nested dict
-
-            # {<cliname>:{
-            #             type:<type>
-            #             }
-            # }
 
             cli_dict = json.loads(cli_dict)
 

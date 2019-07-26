@@ -59,18 +59,6 @@ class DockerImage():
     type = 'type'
     xml = 'xml'
     cli_dict = 'cli_list'
-    # structure of the dictionary to store metadata
-    # {
-    # imagehash:<hash of docker image name>
-    #     cli_list: {
-    #         cli_name: {
-    #                   type: < type >
-    #                   xml: < xml >
-    #
-    # }
-    # }
-    # docker_image_name: < name >
-    # }
 
     def __init__(self, name):
         try:

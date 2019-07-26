@@ -136,7 +136,8 @@ class DockerResource(Resource):
         self.requireParams(('name',), params)
         if 'delete_from_local_repo' in params:
             deleteImage = params['delete_from_local_repo']
-            if deleteImage is 'True':
+            # if deleteImage is 'True':
+            if deleteImage == 'True':
                 deleteImage = True
         else:
             deleteImage = False

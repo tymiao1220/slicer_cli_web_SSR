@@ -27,8 +27,8 @@ class _MultilineHelpFormatter(argparse.HelpFormatter):
 
 def _make_print_cli_list_spec_action(cli_list_spec_file):
 
-    with open(cli_list_spec_file) as f:
-        str_cli_list_spec = f.read()
+    # with open(cli_list_spec_file) as f:
+    #     str_cli_list_spec = f.read()
 
     class _PrintCLIListSpecAction(argparse.Action):
 

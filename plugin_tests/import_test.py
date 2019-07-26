@@ -45,7 +45,7 @@ class ImportPackageTest(base.TestCase):
         raised = False
         try:
             ModelImporter.model('docker_image_model', 'slicer_cli_web_ssr')  # noqa
-        except Exception as e:
+        except Exception as e:  # noqa
             raised = True
 
         self.assertFalse(raised, 'docker_image_model import failed')
