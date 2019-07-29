@@ -24,7 +24,7 @@ import { restRequest, getApiRoot } from 'girder/rest';
 import HierarchyBreadcrumbTemplate from 'girder/templates/widgets/hierarchyBreadcrumb.pug';
 import HierarchyWidgetTemplate from 'girder/templates/widgets/hierarchyWidget.pug';
 
-import FolderListWidget from './FolderListWidget';
+import FolderListWidget from './slicerFolderListWidget';
 import 'girder/stylesheets/widgets/hierarchyWidget.styl';
 
 import 'bootstrap/js/dropdown';

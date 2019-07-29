@@ -1,7 +1,7 @@
-import FolderListWidget from './FolderListWidget';
-import HierarchyWidget from './HierarchyWidget';
+import slicerFolderListWidget from './slicerFolderListWidget';
+import slicerHierarchyWidget from './slicerHierarchyWidget';
 
 export {
-    FolderListWidget,
-    HierarchyWidget
+    slicerFolderListWidget,
+    slicerHierarchyWidget
 };

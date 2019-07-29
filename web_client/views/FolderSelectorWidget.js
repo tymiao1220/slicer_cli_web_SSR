@@ -8,7 +8,7 @@ import ItemModel from 'girder/models/ItemModel';
 // import FolderModel from 'girder/models/FolderModel';
 
 // import { restRequest } from 'girder/rest';
-import HierarchyWidget from './widgets/HierarchyWidget';
+import HierarchyWidget from './widgets/slicerHierarchyWidget';
 import folderSelectorWidget from '../templates/folderSelectorWidget.pug';
 // import events from '../events';
 
